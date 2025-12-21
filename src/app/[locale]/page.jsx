@@ -1,6 +1,5 @@
+import { Landing } from "@/components/Landing/Landing";
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
-import Link from "next/link";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -69,51 +68,15 @@ export default async function Home({ params }) {
   const { locale } = await params;
   const t = await getTranslations("Homepage");
 
-  const baseUrl = "https://next-js-intl.vercel.app";
-  const url = locale === "km" ? baseUrl : `${baseUrl}/${locale}`;
-
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    url,
-    name: t("title"),
-    description: t("description"),
-    inLanguage: locale === "km" ? "km-KH" : "en-US",
-    publisher: {
-      "@type": "Organization",
-      name: "Tithyareak App"
-    }
-  };
-
   return (
     <>
-      <main className="p-6 " role="main">
-        <header>
-          <h1 className="text-cyan-800 text-3xl font-semibold mb-4">
-            {t("title")}
-          </h1>
-          <p className="mb-6">{t("description")}</p>
-        </header>
-
-        <section aria-labelledby="developer-section">
-          <Image
-            src="/developer.jpg"
-            width={200}
-            height={200}
-            alt={t("developerAlt") ?? "Developer working on laptop"}
-          />
-        </section>
-
-        <nav className="mt-6">
-          <Link
-            href="/case-convert"
-            className="text-blue-800 underline block cursor-pointer"
-          >
-            {t("linkText") ?? "Try Case Converter Tool"}
-          </Link>
-        </nav>
-      </main>
-
+      <Landing />
+      {/* Footer */}
+      <footer className="mb-8 border-t border-gray-200 dark:border-gray-800 pt-8 text-gray-500 dark:text-gray-400 text-sm">
+        <p className=" text-center">
+          © {new Date().getFullYear()} Mini App — Built with ❤️ by Wukong
+        </p>
+      </footer>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

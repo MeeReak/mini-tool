@@ -4,10 +4,15 @@
     "description": "Welcome to my Tithyareak App - with many tools that you don't wanna know!"
   },
   "Homepage": {
-    "title": "Tithyareak App",
-    "description": "Tithyareak App have many tools that you don't wanna use!!",
-    "linkText": "Just click here",
-    "developerAlt": "developer"
+    "title": "Mini App",
+    "description": "Mini App has many simple tools that just work.",
+    "developerAlt": "developer",
+    "easy": "Easy to Use",
+    "easyDesc": "Simple and minimal tools that just work.",
+    "multiLang": "Multi-language",
+    "multiLangDesc": "Supports Khmer and English for everyone.",
+    "themeMode": "Dark & Light Mode",
+    "themeModeDesc": "Automatically adjusts to your theme."
   },
   "About": {
     "title": "About us",

@@ -4,10 +4,15 @@
     "description": "សូមស្វាគមន៍មកកាន់កម្មវិធី Tithyareak App របស់ខ្ញុំ - ដែលមានរបស់លេងជាច្រើនដែលអ្នកមិនចង់ដឹង!"
   },
   "Homepage": {
-    "title": "Tithyareak App",
-    "description": "Tithyareak App មានរបស់លេងជាច្រើនដែលអ្នកមិនចង់ប្រើ!!",
-    "linkText": "សូមចុចទីនេះ",
-    "developerAlt": "អ្នកអភិវឌ្ឍន៍"
+    "title": "Mini App",
+    "description": "Mini App មានឧបករណ៍សាមញ្ញជាច្រើនដែលដំណើរការល្អ និងងាយស្រួលប្រើ",
+    "developerAlt": "អ្នកអភិវឌ្ឍន៍",
+    "easy": "ងាយស្រួលប្រើ",
+    "easyDesc": "របស់លេងសាមញ្ញ និងងាយស្រួលប្រើ",
+    "multiLang": "ច្រើនភាសា",
+    "multiLangDesc": "មានជាភាសាខ្មែរ និងអង់គ្លេស",
+    "themeMode": "មុខងារពន្លឺ & ងងឹត",
+    "themeModeDesc": "ផ្លាស់ប្តូរ​​​ theme​ តាមចំណង់ចំណូលចិត្តរបស់អ្នក"
   },
   "About": {
     "title": "អំពីយើង",
