@@ -1,117 +1,92 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { CASE_TYPES } from "../../util/Constant";
+import { CheckIcon, CopyIcon, DownloadIcon, Trash2Icon } from "lucide-react";
 
-const caseTransform = (type, text, options = {}) => {
-  switch (type) {
-    case "sentence":
-      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    case "lower":
-      return text.toLowerCase();
-    case "upper":
-      return text.toUpperCase();
-    case "capitalized":
-      return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
-    case "alternating":
-      return [...text]
-        .map((char, i) =>
-          i % 2 === 0 ? char.toLowerCase() : char.toUpperCase()
-        )
-        .join("");
-    case "title":
-      return text.toLowerCase().replace(/\b(\w)/g, (s) => s.toUpperCase());
-    case "inverse":
-      return [...text]
-        .map((char) =>
-          char === char.toLowerCase() ? char.toUpperCase() : char.toLowerCase()
-        )
-        .join("");
-    case "random-separator":
-      if (!text.trim()) return text;
-      // if options.replaceExisting is true, replace existing separators ( _ or - )
-      if (options.replaceExisting) {
-        // replace any run of _ or - with the provided separator
-        return text.replace(/[_-]+/g, options.separator || "_");
-      }
-      // otherwise replace whitespace
-      const separator = options.separator || "_";
-      return text.trim().replace(/\s+/g, separator);
-    case "no-symbol":
-      return text
-        .replace(/[^a-zA-Z0-9]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    default:
-      return text;
+const transformers = {
+  sentence: (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase(),
+  lower: (t) => t.toLowerCase(),
+  upper: (t) => t.toUpperCase(),
+  capitalized: (t) => t.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()),
+  alternating: (t) =>
+    [...t].map((c, i) => (i % 2 ? c.toUpperCase() : c.toLowerCase())).join(""),
+  title: (t) => t.toLowerCase().replace(/\b(\w)/g, (s) => s.toUpperCase()),
+  inverse: (t) =>
+    [...t]
+      .map((c) => (c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase()))
+      .join(""),
+  "no-symbol": (t) =>
+    t
+      .replace(/[^a-zA-Z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+};
+
+const caseTransform = (type, text, options) => {
+  if (type === "random-separator") {
+    const sep = options?.separator ?? "_";
+    return options?.replaceExisting
+      ? text.replace(/[_-]+/g, sep)
+      : text.trim().replace(/\s+/g, sep);
   }
+
+  return transformers[type]?.(text) ?? text;
 };
 
 export const CaseCover = () => {
-  const t = useTranslations("CaseConverter");
+  const t = useTranslations("CaseConvert");
   const [text, setText] = useState("");
-  const [originalText, setOriginalText] = useState("");
-  const [clickedButton, setClickedButton] = useState(null);
   const historyRef = useRef([]);
   const textareaRef = useRef(null);
   const separatorRef = useRef("_"); // current "next" separator; will toggle on click
   const [copiedButton, setCopiedButton] = useState(""); // track which case button was copied
 
-  const pushHistory = useCallback((prev) => {
-    if (prev === undefined) return;
-    const stack = historyRef.current;
-    if (stack.length === 0 || stack[stack.length - 1] !== prev) {
-      stack.push(prev);
+  const pushHistory = useCallback((prev, next) => {
+    if (prev !== next) {
+      historyRef.current.push(prev);
     }
   }, []);
 
-  const handleCaseChange = (type) => {
-    setClickedButton(type); // trigger click effect
+  const handleCaseChange = useCallback(
+    (type) => {
+      pushHistory(text);
 
-    pushHistory(text);
+      if (type === "random-separator") {
+        const next = separatorRef.current === "_" ? "-" : "_";
+        const transformed = caseTransform(type, text, {
+          separator: next,
+          replaceExisting: /[_-]/.test(text)
+        });
 
-    // Random separator logic
-    if (type === "random-separator") {
-      const nextSeparator = separatorRef.current === "_" ? "-" : "_";
-      let transformed;
-      if (/[_-]/.test(text)) {
-        transformed = caseTransform("random-separator", text, {
-          separator: nextSeparator,
-          replaceExisting: true
-        });
-      } else {
-        transformed = caseTransform("random-separator", text, {
-          separator: nextSeparator
-        });
+        separatorRef.current = next;
+        setText(transformed);
+        return;
       }
-      separatorRef.current = nextSeparator;
-      setText(transformed);
-      setOriginalText(transformed);
-    } else {
-      const transformed = caseTransform(type, text);
-      setText(transformed);
-      setOriginalText(transformed);
-    }
 
-    // Remove click effect after 150ms
-    setTimeout(() => setClickedButton(null), 150);
-  };
+      setText(caseTransform(type, text));
+    },
+    [text, pushHistory]
+  );
 
-  const handleTextareaChange = (e) => {
-    const value = e.target.value;
-    pushHistory(text);
-    setText(value);
-    setOriginalText(value);
-  };
+  const handleTextChange = useCallback(
+    (e) => {
+      if (e.nativeEvent.isComposing) return;
 
-  const handleTextareaKeyDown = (e) => {
+      const nextValue = e.target.value;
+      pushHistory(text, nextValue);
+      setText(nextValue);
+    },
+    [text, pushHistory]
+  );
+
+  const handleKeyDown = (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
       e.preventDefault();
       const prev = historyRef.current.pop();
       if (prev !== undefined) {
         setText(prev);
-        setOriginalText(prev);
         requestAnimationFrame(() => {
           const el = textareaRef.current;
           if (el) {
@@ -125,21 +100,26 @@ export const CaseCover = () => {
     }
   };
 
-  const downloadTextFile = () => {
+  const downloadText = () => {
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+    const today = new Date();
+    const isoString = today.toISOString();
+
     a.href = url;
-    a.download = "case-converted.txt";
+    a.download = `case-convert-${isoString.split("T")[0]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const stats = {
-    character: text.length,
-    word: text.trim() ? text.trim().split(/\s+/).length : 0,
-    line: text.split("\n").length
-  };
+  const stats = React.useMemo(
+    () => ({
+      character: text.length,
+      word: text.trim() ? text.trim().split(/\s+/).length : 0
+    }),
+    [text]
+  );
 
   const handleCopy = (text, key) => {
     navigator.clipboard
@@ -151,93 +131,111 @@ export const CaseCover = () => {
       .catch(() => console.error("Failed to copy"));
   };
 
+  useEffect(() => textareaRef.current?.focus(), []);
+
+  const actionBtn =
+    "enabled:hover:brightness-90 py-2 px-3 rounded-md text-white transition-transform duration-50 ease-out enabled:active:scale-95 focus:outline-none focus:ring-1";
+
+  const disabled = "opacity-50";
+
   return (
     <section
       aria-labelledby="case-convert"
-      className="p-6 rounded-xl shadow-md max-w-3xl mx-auto border border-gray-300 bg-white dark:bg-[#121826] dark:border-gray-700 dark:text-white"
+      className="p-6 max-w-[860px] mx-auto"
     >
-      <h1
-        id="case-convert"
-        className="block font-semibold text-xl mb-5 text-black dark:text-white"
-      >
-        {t("inputLabel")}
-      </h1>
-
-      <textarea
+      <input
+        placeholder={t("inputLabel")}
         ref={textareaRef}
         id="case-textarea"
-        rows={5}
         value={text}
-        onChange={handleTextareaChange}
-        onKeyDown={handleTextareaKeyDown}
+        onChange={handleTextChange}
+        onKeyDown={handleKeyDown}
         spellCheck={true}
-        className="w-full border rounded p-3 focus:outline-none focus:ring-1 focus:ring-blue-500
-             bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+        className="
+          w-full text-center text-base
+          p-3
+          bg-transparent
+          border-b-2 border-[#060709]/30
+          dark:border-white/30
+          text-[#060709]
+          dark:text-white
+          focus:outline-none dark:focus:border-[#f5dc50]
+          focus:border-[#f5dc50] hover:border-[#f5dc50]
+          dark:hover:border-[#f5dc50]
+          transition
+        "
       />
 
-      <div className="text-sm mt-2 text-black dark:text-white">
-        {t("stats.character")}: {stats.character} | {t("stats.word")}:
-        {stats.word} | {t("stats.line")}: {stats.line}
+      <div className="flex justify-between items-center gap-2 mt-6 flex-wrap">
+        <div className="text-sm text-[#060709]/70 dark:text-white">
+          {t("stats.word")}: {stats.word}
+          <span className="dark:text-[#f5dc50]"> | </span>
+          {t("stats.character")}: {stats.character}
+        </div>
+        <div className="flex gap-5 flex-wrap">
+          <button
+            aria-label="Clear text"
+            onClick={() => {
+              pushHistory(text);
+              setText("");
+            }}
+            disabled={text.length === 0}
+            className={`${actionBtn} bg-red-600 focus:ring-red-400 ${
+              !text && disabled
+            }`}
+          >
+            {/* {t("clear")} */}
+            <Trash2Icon className="size-4" />
+          </button>
+          <button
+            aria-label="Copy text"
+            onClick={() => handleCopy(text, "copy")}
+            disabled={text.length === 0}
+            className={`${actionBtn} bg-blue-600 focus:ring-blue-400 ${
+              !text && disabled
+            }`}
+          >
+            {/* {copiedButton === "copy" ? `${t("copySuccess")}` : `${t("copy")}`} */}
+            {copiedButton === "copy" ? (
+              <CheckIcon className="size-4" />
+            ) : (
+              <CopyIcon className="size-4" />
+            )}
+          </button>
+
+          <button
+            aria-label="Download text"
+            onClick={downloadText}
+            disabled={text.length === 0}
+            className={`${actionBtn} bg-green-600 focus:ring-green-400 ${
+              !text && disabled
+            }`}
+          >
+            {/* {t("download")} */}
+            <DownloadIcon className="size-4" />
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-4">
+      <div className="flex justify-between mt-6">
         {CASE_TYPES.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => handleCaseChange(key)}
             disabled={text.trim().length === 0}
-            className={`px-3 py-1 shadow-md border font-medium rounded-md transition-colors duration-200
-              dark:border-gray-600 dark:bg-gray-900 dark:text-white text-black
-              focus:outline-none
-              ${
-                text.trim().length === 0
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer"
-              }`}
+            className={`
+                px-3 py-1 shadow-sm bg-[#f5dc50] rounded-md text-black
+                enabled:active:scale-95
+                disabled:opacity-[0.5]
+                disabled:cursor-default
+                cursor-pointer
+                transition-transform duration-50 ease-out
+                enabled:hover:brightness-90
+              `}
           >
             {t(label)}
           </button>
         ))}
-      </div>
-
-      <div className="flex gap-2 mt-4 flex-wrap">
-        <button
-          onClick={() => {
-            pushHistory(text);
-            setText("");
-            setOriginalText("");
-          }}
-          disabled={text.length === 0}
-          className={`px-3 py-1 bg-red-500 text-white rounded dark:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-red-400 focus:ring-opacity-50 
-            ${
-              text.length === 0
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-red-700 cursor-pointer"
-            }`}
-        >
-          {t("clear")}
-        </button>
-        <button
-          onClick={() => handleCopy(text, "copy")}
-          disabled={text.length === 0}
-          className={`px-3 py-1 min-w-[90px] whitespace-nowrap bg-blue-500 text-white rounded dark:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:ring-opacity-50 
-    ${text.length === 0 ? "cursor-not-allowed opacity-50" : "hover:bg-blue-700 cursor-pointer"}`}
-        >
-          {copiedButton === "copy" ? `${t("copySuccess")}` : `${t("copy")}`}
-        </button>
-
-        <button
-          onClick={downloadTextFile}
-          disabled={text.length === 0}
-          className={`px-3 py-1 bg-green-500 text-white rounded dark:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-green-400 focus:ring-opacity-50 
-            ${
-              text.length === 0
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-green-700 cursor-pointer"
-            }`}
-        >
-          {t("download")}
-        </button>
       </div>
     </section>
   );

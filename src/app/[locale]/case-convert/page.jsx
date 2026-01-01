@@ -9,8 +9,8 @@ export async function generateMetadata({ params }) {
   const baseUrl = "https://next-js-intl.vercel.app";
 
   return {
-    title: t("CaseConverter.title"),
-    description: t("CaseConverter.description"),
+    title: t("CaseConvert.title"),
+    description: t("CaseConvert.description"),
 
     icons: {
       icon: [
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default function Home() {
-  const t = useTranslations("CaseConverter");
+  const t = useTranslations("CaseConvert");
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -118,7 +118,7 @@ export default function Home() {
   return (
     <>
       <main className="min-h-screen p-6">
-        <h1 className="text-3xl font-bold text-center mb-4">{t("title")}</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">{t("title")}</h1>
         <CaseCover />
         <script
           type="application/ld+json"

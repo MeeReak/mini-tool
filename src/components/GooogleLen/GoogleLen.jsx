@@ -31,7 +31,7 @@ export const GoogleLen = () => {
       alert(t("invalidType"));
     }
 
-    if (validFiles.length + files.length > 20) {
+    if (validFiles.length + files.length > 10) {
       alert(t("fileLimitExceeded"));
       return;
     }
@@ -112,10 +112,8 @@ export const GoogleLen = () => {
           if (blob) filesFromClipboard.push(blob);
         }
       }
-
       if (filesFromClipboard.length > 0) {
         handleFiles(filesFromClipboard);
-
         pasteTimeoutRef.current = setTimeout(() => {
           pasteTimeoutRef.current = null;
         }, 1000);

@@ -1,11 +1,11 @@
 {
   "meta": {
     "title": "Tithyareak App by Mee",
-    "description": "សូមស្វាគមន៍មកកាន់កម្មវិធី Tithyareak App របស់ខ្ញុំ - ដែលមានរបស់លេងជាច្រើនដែលអ្នកមិនចង់ដឹង!"
+    "description": "សូមស្វាគមន៍មកកាន់កម្មវិធី Tithyareak App របស់ខ្ញុំ - ដែលមានរបស់លេងជាច្រើន!"
   },
   "Homepage": {
-    "title": "Mini App",
-    "description": "Mini App មានឧបករណ៍សាមញ្ញជាច្រើនដែលដំណើរការល្អ និងងាយស្រួលប្រើ",
+    "title": "Mini Tool",
+    "description": "Mini Tool មានដែលមានរបស់លេងជាច្រើន",
     "developerAlt": "អ្នកអភិវឌ្ឍន៍",
     "easy": "ងាយស្រួលប្រើ",
     "easyDesc": "របស់លេងសាមញ្ញ និងងាយស្រួលប្រើ",
@@ -24,17 +24,17 @@
     "description": "សូមអភ័យទោស មិនអាចរកឃើញទំព័រនេះទេ។",
     "back": "សូមចុចទីនេះដើម្បីត្រឡប់ទៅទំព័រដើម"
   },
-  "CaseConverter": {
-    "title": "កម្មវិធីបម្លែងអក្សរ",
+  "CaseConvert": {
+    "title": "បម្លែងអក្សរ",
     "description": "បម្លែងអត្ថបទទៅជារូបមន្តអក្សរផ្សេងៗបានយ៉ាងងាយស្រួល។",
-    "inputLabel": "វាយអត្ថបទ អក្សរ ឬនិមិត្តសញ្ញានៅទីនេះ",
-    "sentence": "Sentence case",
-    "lower": "lower case",
-    "upper": "UPPER CASE",
-    "capitalized": "Capitalized Case",
-    "alternating": "aLtErNaTiNg cAsE",
-    "titleCase": "Title Case",
-    "inverse": "InVeRsE CaSe",
+    "inputLabel": "វាយពាក្យ ឬអត្ថបទនៅទីនេះ",
+    "sentence": "Sentence",
+    "lower": "lower",
+    "upper": "UPPER",
+    "capitalized": "Capitalized",
+    "alternating": "aLtErNaTiNg",
+    "titleCase": "Title",
+    "inverse": "InVeRsE",
     "randomSeparator": "Random Separator",
     "noSymbol": "No Symbol",
     "download": "ទាញយក",

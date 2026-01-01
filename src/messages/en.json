@@ -4,8 +4,8 @@
     "description": "Welcome to my Tithyareak App - with many tools that you don't wanna know!"
   },
   "Homepage": {
-    "title": "Mini App",
-    "description": "Mini App has many simple tools that just work.",
+    "title": "Mini Tool",
+    "description": "Mini Tool has many simple tools that just work.",
     "developerAlt": "developer",
     "easy": "Easy to Use",
     "easyDesc": "Simple and minimal tools that just work.",
@@ -24,17 +24,17 @@
     "description": "Sorry, we couldn't find that page.",
     "back": "Click here to go back to the homepage"
   },
-  "CaseConverter": {
-    "title": "Case Converter",
+  "CaseConvert": {
+    "title": "Case Convert",
     "description": "Convert text to various case formats easily.",
-    "inputLabel": "Type text, words, letters, or symbols here:",
-    "sentence": "Sentence case",
-    "lower": "lower case",
-    "upper": "UPPER CASE",
-    "capitalized": "Capitalized Case",
-    "alternating": "aLtErNaTiNg cAsE",
-    "titleCase": "Title Case",
-    "inverse": "InVeRsE CaSe",
+    "inputLabel": "Type or paste your content here:",
+    "sentence": "Sentence",
+    "lower": "lower",
+    "upper": "UPPER",
+    "capitalized": "Capitalized",
+    "alternating": "aLtErNaTiNg",
+    "titleCase": "Title",
+    "inverse": "InVeRsE",
     "randomSeparator": "Random Separator",
     "noSymbol": "No Symbol",
     "download": "Download",

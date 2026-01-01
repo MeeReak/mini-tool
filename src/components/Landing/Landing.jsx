@@ -59,9 +59,9 @@ export const Landing = async () => {
                 className="bg-gray-50 dark:bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-lg transition duration-200 border border-gray-100 dark:border-gray-700"
               >
                 <div className="text-4xl mb-3">{f.icon}</div>
-                <h3 className="text-xl font-semibold text-cyan-700 dark:text-cyan-400 mb-2">
+                <h2 className="text-xl font-semibold text-cyan-700 dark:text-cyan-400 mb-2">
                   {f.title}
-                </h3>
+                </h2>
                 <p className="text-gray-600 dark:text-gray-300">{f.desc}</p>
               </div>
             ))}
