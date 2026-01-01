@@ -130,7 +130,6 @@ const khStems = [
 ];
 
 export {
-  caseTypes,
   CASE_TYPES,
   Photo_Base64,
   khDay,
