@@ -9,7 +9,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #060709;
     --foreground: #ededed;
   }
 }
@@ -46,7 +46,7 @@ body {
 
 /* Dark theme using the 'dark' class on <html> */
 html.dark body {
-  background-color: #10172a;
+  background-color: #060709;
   color: #f9fafb;
 }
 

@@ -1,16 +1,16 @@
 const CASE_TYPES = [
   { key: "sentence", label: "sentence" },
+  { key: "capitalized", label: "capitalized" },
+  { key: "alternating", label: "alternating" },
   { key: "lower", label: "lower" },
   { key: "upper", label: "upper" },
-  { key: "capitalized", label: "capitalized" },
   // { key: "title", label: "titleCase" },
   // { key: "inverse", label: "inverse" },
-  { key: "alternating", label: "alternating" },
-  { key: "random-separator", label: "randomSeparator" },
   {
     key: "no-symbol",
     label: "noSymbol"
-  }
+  },
+  { key: "random-separator", label: "randomSeparator" }
 ];
 
 const Photo_Base64 = "data:image/png;base64,";

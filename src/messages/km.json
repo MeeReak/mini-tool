@@ -5,14 +5,18 @@
   },
   "Homepage": {
     "title": "Mini Tool",
-    "description": "Mini Tool មានដែលមានរបស់លេងជាច្រើន",
+    "description": "these tool are not available in your region",
     "developerAlt": "អ្នកអភិវឌ្ឍន៍",
     "easy": "ងាយស្រួលប្រើ",
     "easyDesc": "របស់លេងសាមញ្ញ និងងាយស្រួលប្រើ",
     "multiLang": "ច្រើនភាសា",
     "multiLangDesc": "មានជាភាសាខ្មែរ និងអង់គ្លេស",
     "themeMode": "មុខងារពន្លឺ & ងងឹត",
-    "themeModeDesc": "ផ្លាស់ប្តូរ​​​ theme​ តាមចំណង់ចំណូលចិត្តរបស់អ្នក"
+    "themeModeDesc": "ផ្លាស់ប្តូរ​​​ theme​ តាមចំណង់ចំណូលចិត្តរបស់អ្នក",
+    "badge": "All-in-One",
+    "ctaPrimary": "Explore Tools",
+    "ctaSecondary": "Learn More",
+    "visualPlaceholder": "Your tools at a glance"
   },
   "About": {
     "title": "អំពីយើង",
@@ -21,8 +25,8 @@
   "notFound": {
     "title": "404 Not Found",
     "h1": "Oops! Looks like this page is lost",
-    "description": "សូមអភ័យទោស មិនអាចរកឃើញទំព័រនេះទេ។",
-    "back": "សូមចុចទីនេះដើម្បីត្រឡប់ទៅទំព័រដើម"
+    "description": "Oops! Page not found.",
+    "back": "Go back home"
   },
   "CaseConvert": {
     "title": "បម្លែងអក្សរ",
@@ -35,7 +39,7 @@
     "alternating": "aLtErNaTiNg",
     "titleCase": "Title",
     "inverse": "InVeRsE",
-    "randomSeparator": "Random Separator",
+    "randomSeparator": "Ran-dom Separ_ator",
     "noSymbol": "No Symbol",
     "download": "ទាញយក",
     "copy": "ចម្លង",

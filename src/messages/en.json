@@ -5,14 +5,18 @@
   },
   "Homepage": {
     "title": "Mini Tool",
-    "description": "Mini Tool has many simple tools that just work.",
+    "description": "these tool are not  available in your region",
     "developerAlt": "developer",
     "easy": "Easy to Use",
     "easyDesc": "Simple and minimal tools that just work.",
     "multiLang": "Multi-language",
     "multiLangDesc": "Supports Khmer and English for everyone.",
     "themeMode": "Dark & Light Mode",
-    "themeModeDesc": "Automatically adjusts to your theme."
+    "themeModeDesc": "Automatically adjusts to your theme.",
+    "badge": "All-in-One",
+    "ctaPrimary": "Explore Tools",
+    "ctaSecondary": "Learn More",
+    "visualPlaceholder": "Your tools at a glance"
   },
   "About": {
     "title": "About us",
@@ -21,8 +25,8 @@
   "notFound": {
     "title": "404 Not Found",
     "h1": "Oops! Looks like this page is lost",
-    "description": "Sorry, we couldn't find that page.",
-    "back": "Click here to go back to the homepage"
+    "description": "Oops! Page not found.",
+    "back": "Go back home"
   },
   "CaseConvert": {
     "title": "Case Convert",
@@ -35,7 +39,7 @@
     "alternating": "aLtErNaTiNg",
     "titleCase": "Title",
     "inverse": "InVeRsE",
-    "randomSeparator": "Random Separator",
+    "randomSeparator": "Ran-dom Separ_ator",
     "noSymbol": "No Symbol",
     "download": "Download",
     "copy": "Copy",

@@ -71,10 +71,10 @@ export default async function Home({ params }) {
   return (
     <>
       <Landing />
-      {/* Footer */}
       <footer className="mb-8 border-t border-gray-200 dark:border-gray-800 pt-8 text-gray-500 dark:text-gray-400 text-sm">
         <p className=" text-center">
-          © {new Date().getFullYear()} Mini App — Built with ❤️ by Wukong
+          © {new Date().getFullYear()} Mini Tool — Built with ❤️
+          {/* © {new Date().getFullYear()} Mini App — Built with ❤️ by Wukong */}
         </p>
       </footer>
       <script

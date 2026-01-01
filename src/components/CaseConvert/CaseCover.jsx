@@ -39,9 +39,9 @@ export const CaseCover = () => {
   const t = useTranslations("CaseConvert");
   const [text, setText] = useState("");
   const historyRef = useRef([]);
-  const textareaRef = useRef(null);
-  const separatorRef = useRef("_"); // current "next" separator; will toggle on click
-  const [copiedButton, setCopiedButton] = useState(""); // track which case button was copied
+  const textRef = useRef(null);
+  const separatorRef = useRef("_");
+  const [copiedButton, setCopiedButton] = useState("");
 
   const pushHistory = useCallback((prev, next) => {
     if (prev !== next) {
@@ -88,7 +88,7 @@ export const CaseCover = () => {
       if (prev !== undefined) {
         setText(prev);
         requestAnimationFrame(() => {
-          const el = textareaRef.current;
+          const el = textRef.current;
           if (el) {
             const pos = prev.length;
             try {
@@ -131,10 +131,10 @@ export const CaseCover = () => {
       .catch(() => console.error("Failed to copy"));
   };
 
-  useEffect(() => textareaRef.current?.focus(), []);
+  useEffect(() => textRef.current?.focus(), []);
 
   const actionBtn =
-    "enabled:hover:brightness-90 py-2 px-3 rounded-md text-white transition-transform duration-50 ease-out enabled:active:scale-95 focus:outline-none focus:ring-1";
+    "enabled:hover:brightness-90 py-2 px-2 md:px-3 rounded-md text-white transition-transform duration-50 ease-out enabled:active:scale-95 focus:outline-none focus:ring-1";
 
   const disabled = "opacity-50";
 
@@ -145,7 +145,7 @@ export const CaseCover = () => {
     >
       <input
         placeholder={t("inputLabel")}
-        ref={textareaRef}
+        ref={textRef}
         id="case-textarea"
         value={text}
         onChange={handleTextChange}
@@ -166,65 +166,66 @@ export const CaseCover = () => {
         "
       />
 
-      <div className="flex justify-between items-center gap-2 mt-6 flex-wrap">
-        <div className="text-sm text-[#060709]/70 dark:text-white">
+      <div className="flex justify-between items-center gap-2 mt-6 flex-wrap h-7 md:h-8">
+        <div className="text-sm text-gray-700 dark:text-white">
           {t("stats.word")}: {stats.word}
           <span className="dark:text-[#f5dc50]"> | </span>
           {t("stats.character")}: {stats.character}
         </div>
-        <div className="flex gap-5 flex-wrap">
-          <button
-            aria-label="Clear text"
-            onClick={() => {
-              pushHistory(text);
-              setText("");
-            }}
-            disabled={text.length === 0}
-            className={`${actionBtn} bg-red-600 focus:ring-red-400 ${
-              !text && disabled
-            }`}
-          >
-            {/* {t("clear")} */}
-            <Trash2Icon className="size-4" />
-          </button>
-          <button
-            aria-label="Copy text"
-            onClick={() => handleCopy(text, "copy")}
-            disabled={text.length === 0}
-            className={`${actionBtn} bg-blue-600 focus:ring-blue-400 ${
-              !text && disabled
-            }`}
-          >
-            {/* {copiedButton === "copy" ? `${t("copySuccess")}` : `${t("copy")}`} */}
-            {copiedButton === "copy" ? (
-              <CheckIcon className="size-4" />
-            ) : (
-              <CopyIcon className="size-4" />
-            )}
-          </button>
 
-          <button
-            aria-label="Download text"
-            onClick={downloadText}
-            disabled={text.length === 0}
-            className={`${actionBtn} bg-green-600 focus:ring-green-400 ${
-              !text && disabled
-            }`}
-          >
-            {/* {t("download")} */}
-            <DownloadIcon className="size-4" />
-          </button>
-        </div>
+        {text && (
+          <div className="flex gap-2 md:gap-5 flex-wrap">
+            <button
+              aria-label="Clear text"
+              onClick={() => {
+                pushHistory(text);
+                setText("");
+              }}
+              className={`${actionBtn} bg-red-600 focus:ring-red-400 ${
+                !text && disabled
+              }`}
+            >
+              {/* {t("clear")} */}
+              <Trash2Icon className="size-3 md:size-4" />
+            </button>
+            <button
+              aria-label="Copy text"
+              onClick={() => handleCopy(text, "copy")}
+              className={`${actionBtn} bg-blue-600 focus:ring-blue-400 ${
+                !text && disabled
+              }`}
+            >
+              {/* {copiedButton === "copy" ? `${t("copySuccess")}` : `${t("copy")}`} */}
+              {copiedButton === "copy" ? (
+                <CheckIcon className="size-3 md:size-4" />
+              ) : (
+                <CopyIcon className="size-3 md:size-4" />
+              )}
+            </button>
+
+            <button
+              aria-label="Download text"
+              onClick={downloadText}
+              className={`${actionBtn} bg-green-600 focus:ring-green-400 ${
+                !text && disabled
+              }`}
+            >
+              {/* {t("download")} */}
+              <DownloadIcon className="size-3 md:size-4" />
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="flex justify-between mt-6">
-        {CASE_TYPES.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => handleCaseChange(key)}
-            disabled={text.trim().length === 0}
-            className={`
-                px-3 py-1 shadow-sm bg-[#f5dc50] rounded-md text-black
+      {text && (
+        <div className="flex flex-wrap md:justify-between gap-2 mt-6">
+          {CASE_TYPES.map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => handleCaseChange(key)}
+              disabled={text.trim().length === 0}
+              className={`
+                px-2 md:px-3 py-1 shadow-sm bg-[#f5dc50] rounded-md text-black text-sm md:text-base
                 enabled:active:scale-95
                 disabled:opacity-[0.5]
                 disabled:cursor-default
@@ -232,11 +233,12 @@ export const CaseCover = () => {
                 transition-transform duration-50 ease-out
                 enabled:hover:brightness-90
               `}
-          >
-            {t(label)}
-          </button>
-        ))}
-      </div>
+            >
+              {t(label)}
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 };
