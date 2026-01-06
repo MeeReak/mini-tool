@@ -46,8 +46,8 @@
     "copySuccess": "Copied",
     "clear": "Clear",
     "stats": {
-      "character": "Character Count",
-      "word": "Word Count",
+      "character": "Character",
+      "word": "Word",
       "line": "Line Count"
     }
   },
