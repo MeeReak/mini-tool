@@ -1,4 +1,4 @@
-import { CaseCover } from "@/components/CaseConvert/CaseCover";
+import { CaseCover } from "@/components/CaseConvert/CaseCovert";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 

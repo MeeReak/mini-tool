@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { CASE_TYPES } from "../../util/Constant";
 import { CheckIcon, CopyIcon, DownloadIcon, Trash2Icon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const transformers = {
   sentence: (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase(),
@@ -42,6 +43,8 @@ export const CaseCover = () => {
   const textRef = useRef(null);
   const separatorRef = useRef("_");
   const [copiedButton, setCopiedButton] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const pushHistory = useCallback((prev, next) => {
     if (prev !== next) {
@@ -77,8 +80,19 @@ export const CaseCover = () => {
       const nextValue = e.target.value;
       pushHistory(text, nextValue);
       setText(nextValue);
+
+      const params = new URLSearchParams(searchParams.toString());
+      if (nextValue.length > 200) return;
+
+      if (nextValue.trim()) {
+        params.set("text", encodeURIComponent(nextValue));
+      } else {
+        params.delete("text");
+      }
+
+      router.replace(`?${params.toString()}`, { scroll: false });
     },
-    [text, pushHistory]
+    [text, pushHistory, router, searchParams]
   );
 
   const handleKeyDown = (e) => {
@@ -132,6 +146,12 @@ export const CaseCover = () => {
   };
 
   useEffect(() => textRef.current?.focus(), []);
+  useEffect(() => {
+    const urlText = searchParams.get("text");
+    if (urlText) {
+      setText(decodeURIComponent(urlText));
+    }
+  }, []);
 
   const actionBtn =
     "enabled:hover:brightness-90 py-2 px-2 md:px-3 rounded-md text-white transition-transform duration-50 ease-out enabled:active:scale-95 focus:outline-none focus:ring-1";

@@ -84,7 +84,7 @@ export default function Page() {
   return (
     <>
       <main className="min-h-screen p-6">
-        <h1 className="lg:text-3xl text-2xl font-bold text-center mb-4">
+        <h1 className="lg:text-3xl text-2xl font-bold text-center mb-8">
           {t("title")}
         </h1>
         <GoogleLen />

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import { CheckIcon, CopyIcon, Trash2Icon, XIcon } from "lucide-react";
 const QrScanner = dynamic(() => import("./QrScanner"), { ssr: false });
 
 export const GoogleLen = () => {
@@ -14,28 +15,52 @@ export const GoogleLen = () => {
   const [previews, setPreviews] = useState([]);
   const [qrResults, setQrResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [clickedQR, setClickedQR] = useState([]);
+  const [copiedButton, setCopiedButton] = useState("");
 
   const allowedTypes = [
     "image/png",
     "image/jpeg",
     "image/jpg",
-    "image/gif",
+    // "image/gif",
     "application/pdf"
   ];
 
+  const MAX_TOTAL = 10;
+  const MAX_PDF = 5;
+
   const handleFiles = async (fileList) => {
-    const validFiles = Array.from(fileList).filter((file) =>
+    const incomingFiles = Array.from(fileList);
+
+    // 1️⃣ Filter allowed types
+    const validFiles = incomingFiles.filter((file) =>
       allowedTypes.includes(file.type)
     );
-    if (validFiles.length !== fileList.length) {
+
+    if (validFiles.length === 0) return;
+
+    if (validFiles.length !== incomingFiles.length) {
       alert(t("invalidType"));
     }
 
-    if (validFiles.length + files.length > 10) {
-      alert(t("fileLimitExceeded"));
+    // 2️⃣ Count THIS BATCH ONLY
+    const totalCount = validFiles.length;
+    const pdfCount = validFiles.filter(
+      (f) => f.type === "application/pdf"
+    ).length;
+
+    // 3️⃣ Enforce per-upload rules
+    if (totalCount > MAX_TOTAL) {
+      alert(t("fileLimitExceeded")); // max 10 per upload
       return;
     }
 
+    if (pdfCount > MAX_PDF) {
+      alert(t("pdfFIleLimit")); // max 5 pdf per upload
+      return;
+    }
+
+    // 4️⃣ Process batch
     setIsLoading(true);
     await new Promise((r) => requestAnimationFrame(r));
 
@@ -62,29 +87,31 @@ export const GoogleLen = () => {
           previewUrl: res.value.previewUrl
         });
         newResults.push(res.value.data || null);
-      } else {
-        newPreviews.push({ file: res.reason.file || null, previewUrl: null });
-        newResults.push(null);
       }
     });
 
+    // 5️⃣ Append (NO LIMIT HERE)
     setFiles((prev) => [...prev, ...newPreviews.map((p) => p.file)]);
     setPreviews((prev) => [...prev, ...newPreviews]);
     setQrResults((prev) => [...prev, ...newResults]);
 
-    // console.log("TotalScanTime:", performance.now().toFixed(), "ms");
     setIsLoading(false);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // 🔑 prevents bubbling
+
     const dropped = e.dataTransfer.files;
-    if (dropped.length > 0) handleFiles(dropped);
+    if (dropped.length > 0) {
+      handleFiles(dropped);
+    }
   };
 
   const handleInputChange = (e) => {
     const selected = e.target.files;
-    if (selected && selected.length > 0) handleFiles(selected);
+    if (!selected || selected.length === 0) return;
+    handleFiles(selected);
   };
 
   const resetFiles = () => {
@@ -127,139 +154,211 @@ export const GoogleLen = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const preventDefaults = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    window.addEventListener("dragover", preventDefaults);
+    window.addEventListener("drop", preventDefaults);
+
+    return () => {
+      window.removeEventListener("dragover", preventDefaults);
+      window.removeEventListener("drop", preventDefaults);
+    };
+  }, []);
+
+  const handleCopy = (text, key) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopiedButton(key);
+        setTimeout(() => setCopiedButton(""), 1500); // reset after 1.5s
+      })
+      .catch(() => console.error("Failed to copy"));
+  };
+
   return (
-    <section
-      aria-labelledby="google-len-title"
-      className="p-4 lg:p-6 rounded-xl shadow-md max-w-3xl mx-auto border border-gray-300 bg-white dark:bg-gray-900 dark:border-gray-700 dark:text-white"
-    >
-      <header className="flex justify-between items-center mb-3 lg:mb-4">
-        <h1
-          id="google-len-title"
-          className="block font-semibold text-lg lg:text-xl"
-        >
-          {t("inputLabel")}
-        </h1>
-        {files.length > 0 && (
-          <button
-            onClick={resetFiles}
-            className="text-xs lg:text-sm px-2 lg:px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
-            aria-label={t("clearFiles")}
-          >
-            {t("clear")}
-          </button>
-        )}
-      </header>
-
-      <div
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        className="w-full border-2 border-dashed border-blue-400 rounded-xl px-6 py-8 lg:py-16 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950 dark:hover:bg-blue-900 transition-all cursor-pointer"
-        role="region"
-        aria-describedby="drag-drop-desc"
+    <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+      <section
+        aria-labelledby="google-len-title"
+        className="
+      p-6 max-w-3xl mx-auto
+      rounded-2xl
+      border border-black/10 dark:border-white/10
+      bg-white dark:bg-[#060709]
+      shadow-sm
+    "
       >
-        <input
-          type="file"
-          multiple
-          accept="image/*,.pdf"
-          onChange={handleInputChange}
-          className="hidden"
-          id="fileInput"
-        />
-        <label htmlFor="fileInput" className="cursor-pointer" tabIndex={0}>
-          <p
-            id="drag-drop-desc"
-            className="text-blue-700 dark:text-blue-300 font-medium text-base lg:text-lg"
+        {/* Header */}
+        <header className="flex justify-between items-center mb-4">
+          <h2
+            id="google-len-title"
+            className="font-semibold text-lg text-[#060709] dark:text-white"
           >
-            {t("dragLabel")}
-          </p>
-          <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-300 mt-1">
-            {t("clickLabel")}
-          </p>
+            {t("inputLabel")}
+          </h2>
+
+          {files.length > 0 && (
+            <button
+              onClick={resetFiles}
+              className="
+            p-2 text-sm rounded-md
+            bg-red-600 text-white
+            hover:brightness-90
+            transition
+          "
+            >
+              <Trash2Icon className="size-2 md:size-3" />
+            </button>
+          )}
+        </header>
+
+        {/* Dropzone */}
+
+        <label htmlFor="fileInput" className="cursor-pointer">
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            className="
+        border-2 border-dashed border-[#f5dc50]
+        rounded-2xl px-6 py-12
+        text-center
+        bg-[#f5dc50]/10
+        hover:bg-[#f5dc50]/20
+        transition cursor-pointer
+      "
+          >
+            <input
+              type="file"
+              multiple
+              accept="image/*,.pdf"
+              onChange={handleInputChange}
+              className="hidden"
+              id="fileInput"
+            />
+
+            <p className="font-medium text-base text-[#060709] dark:text-white">
+              {t("dragLabel")}
+            </p>
+            <p className="text-sm text-black/60 dark:text-white/60 mt-1">
+              {t("clickLabel")}
+            </p>
+          </div>
         </label>
-      </div>
+        {/* Loading */}
+        {isLoading && (
+          <div className="mt-4 flex justify-center items-center gap-2 text-[#f5dc50]">
+            <svg
+              className="animate-spin h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+              />
+            </svg>
+            <span className="text-sm">{t("processing")}</span>
+          </div>
+        )}
 
-      {isLoading && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="mt-4 flex items-center justify-center text-blue-600 dark:text-blue-300"
-        >
-          <svg
-            className="animate-spin mr-2 h-5 w-5 text-blue-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3-3-3h4z"
-            />
-          </svg>
-          <span className="text-sm">{t("processing") || "Processing..."}</span>
-        </div>
-      )}
+        {/* Results */}
+        {previews.length > 0 && (
+          <ul className="mt-6 space-y-3">
+            {[...previews].reverse().map(({ file }, index) => {
+              const realIndex = previews.length - 1 - index;
 
-      {previews.length > 0 && (
-        <ul
-          className="mt-4 lg:mt-6 w-full space-y-2 lg:space-y-4"
-          aria-live="polite"
-        >
-          {[...previews].reverse().map(({ file, previewUrl }, index) => {
-            const reversedIndex = previews.length - 1 - index;
+              return (
+                <li
+                  key={realIndex}
+                  className="
+                rounded-xl p-3
+                border border-black/10 dark:border-white/10
+                bg-black/5 dark:bg-white/5 dark:hover:bg-white/10
+              "
+                >
+                  <div className="flex justify-between items-center gap-10">
+                    <span className="truncate text-sm text-[#060709] dark:text-white">
+                      {file.name}
+                    </span>
+                    {/* {clickedQR.includes(realIndex) && (
+                      <span className="ml-2 text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+                        Visited
+                      </span>
+                    )} */}
 
-            return (
-              <li
-                key={reversedIndex}
-                className="flex flex-col gap-2 border border-gray-300 dark:border-gray-700 rounded px-2 lg:px-3 py-2"
-                tabIndex={0}
-                aria-label={`${file.name} ${
-                  qrResults[reversedIndex] ? t("qrCodeFound") : t("noQRFound")
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="truncate text-xs lg:text-base">
-                    {file.name}
+                    <div className=" flex items-center gap-4">
+                      <button
+                        aria-label="Copy url"
+                        onClick={() => handleCopy(qrResults[realIndex], "copy")}
+                        className="
+                    p-2 text-xs rounded-md
+                    bg-[#3662e3] text-white
+                    hover:brightness-90
+                  "
+                      >
+                        {copiedButton === "copy" ? (
+                          <CheckIcon className="size-2 md:size-3" />
+                        ) : (
+                          <CopyIcon className="size-2 md:size-3" />
+                        )}
+                      </button>{" "}
+                      <button
+                        aria-label="Remove url"
+                        onClick={() => removeFile(realIndex)}
+                        className="
+                    p-2 text-xs rounded-md
+                    bg-[#f5dc50] text-black
+                    hover:brightness-90
+                  "
+                      >
+                        <XIcon className="size-2 md:size-3" />
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => removeFile(reversedIndex)}
-                    className="text-xs lg:text-sm px-2 lg:px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    aria-label={t("removeFile", { fileName: file.name })}
-                  >
-                    {t("remove")}
-                  </button>
-                </div>
 
-                {qrResults[reversedIndex] ? (
-                  <a
-                    href={qrResults[reversedIndex]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-600 underline break-all line-clamp-2 lg:line-clamp-2 text-xs lg:text-base"
-                  >
-                    {qrResults[reversedIndex]}
-                  </a>
-                ) : (
-                  <span className="text-gray-400 italic text-xs lg:text-base">
-                    {t("noQRFound")}
-                  </span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  {qrResults[realIndex] ? (
+                    <a
+                      href={qrResults[realIndex]}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        setClickedQR((prev) => [...prev, realIndex]);
+                      }}
+                      className={`
+      mt-2 block text-sm break-all underline
+      ${
+        clickedQR.includes(realIndex)
+          ? "text-gray-400 dark:text-gray-500" // visited style
+          : "text-green-500 dark:text-green-400"
+      } 
+    `}
+                    >
+                      {qrResults[realIndex]}
+                    </a>
+                  ) : (
+                    <p className="mt-2 text-sm italic text-black/40 dark:text-white/40">
+                      {t("noQRFound")}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
-      <QrScanner ref={scannerRef} />
-    </section>
+        <QrScanner ref={scannerRef} />
+      </section>
+    </div>
   );
 };
