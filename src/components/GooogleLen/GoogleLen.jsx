@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { CheckIcon, CopyIcon, Trash2Icon, XIcon } from "lucide-react";
+import { Toast } from "@/components/Toast";
 const QrScanner = dynamic(() => import("./QrScanner"), { ssr: false });
 
 export const GoogleLen = () => {
@@ -17,6 +18,11 @@ export const GoogleLen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [clickedQR, setClickedQR] = useState([]);
   const [copiedButton, setCopiedButton] = useState("");
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = "info") => {
+    setToast({ message, type });
+  };
 
   const allowedTypes = [
     "image/png",
@@ -40,7 +46,7 @@ export const GoogleLen = () => {
     if (validFiles.length === 0) return;
 
     if (validFiles.length !== incomingFiles.length) {
-      alert(t("invalidType"));
+      showToast(t("invalidType"), "error");
     }
 
     // 2️⃣ Count THIS BATCH ONLY
@@ -51,12 +57,12 @@ export const GoogleLen = () => {
 
     // 3️⃣ Enforce per-upload rules
     if (totalCount > MAX_TOTAL) {
-      alert(t("fileLimitExceeded")); // max 10 per upload
+      showToast(t("fileLimitExceeded"), "warning");
       return;
     }
 
     if (pdfCount > MAX_PDF) {
-      alert(t("pdfFIleLimit")); // max 5 pdf per upload
+      showToast(t("pdfFIleLimit"), "warning");
       return;
     }
 
@@ -181,6 +187,13 @@ export const GoogleLen = () => {
 
   return (
     <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}{" "}
       <section
         aria-labelledby="google-len-title"
         className="
@@ -274,68 +287,73 @@ export const GoogleLen = () => {
 
         {/* Results */}
         {previews.length > 0 && (
-          <ul className="mt-6 space-y-3">
-            {[...previews].reverse().map(({ file }, index) => {
-              const realIndex = previews.length - 1 - index;
+          <>
+            <ul className="mt-6 space-y-3">
+              {[...previews].reverse().map(({ file }, index) => {
+                const realIndex = previews.length - 1 - index;
 
-              return (
-                <li
-                  key={realIndex}
-                  className="
+                return (
+                  <li
+                    key={realIndex}
+                    className="
                 rounded-xl p-3
                 border border-black/10 dark:border-white/10
                 bg-black/5 dark:bg-white/5 dark:hover:bg-white/10
               "
-                >
-                  <div className="flex justify-between items-center gap-10">
-                    <span className="truncate text-sm text-[#060709] dark:text-white">
-                      {file.name}
-                    </span>
-                    {/* {clickedQR.includes(realIndex) && (
+                  >
+                    <div className="flex justify-between items-center gap-10">
+                      <span className="truncate text-sm text-[#060709] dark:text-white">
+                        {file.name}
+                      </span>
+                      {/* {clickedQR.includes(realIndex) && (
                       <span className="ml-2 text-xs px-1 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
                         Visited
                       </span>
                     )} */}
 
-                    <div className=" flex items-center gap-4">
-                      <button
-                        aria-label="Copy url"
-                        onClick={() => handleCopy(qrResults[realIndex], "copy")}
-                        className="
+                      <div className=" flex items-center gap-4">
+                        {qrResults[realIndex] !== null && (
+                          <button
+                            aria-label="Copy url"
+                            onClick={() =>
+                              handleCopy(qrResults[realIndex], "copy")
+                            }
+                            className="
                     p-2 text-xs rounded-md
                     bg-[#3662e3] text-white
                     hover:brightness-90
                   "
-                      >
-                        {copiedButton === "copy" ? (
-                          <CheckIcon className="size-2 md:size-3" />
-                        ) : (
-                          <CopyIcon className="size-2 md:size-3" />
+                          >
+                            {copiedButton === "copy" ? (
+                              <CheckIcon className="size-2 md:size-3" />
+                            ) : (
+                              <CopyIcon className="size-2 md:size-3" />
+                            )}
+                          </button>
                         )}
-                      </button>{" "}
-                      <button
-                        aria-label="Remove url"
-                        onClick={() => removeFile(realIndex)}
-                        className="
+                        <button
+                          aria-label="Remove url"
+                          onClick={() => removeFile(realIndex)}
+                          className="
                     p-2 text-xs rounded-md
                     bg-[#f5dc50] text-black
                     hover:brightness-90
                   "
-                      >
-                        <XIcon className="size-2 md:size-3" />
-                      </button>
+                        >
+                          <XIcon className="size-2 md:size-3" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  {qrResults[realIndex] ? (
-                    <a
-                      href={qrResults[realIndex]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        setClickedQR((prev) => [...prev, realIndex]);
-                      }}
-                      className={`
+                    {qrResults[realIndex] ? (
+                      <a
+                        href={qrResults[realIndex]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => {
+                          setClickedQR((prev) => [...prev, realIndex]);
+                        }}
+                        className={`
       mt-2 block text-sm break-all underline
       ${
         clickedQR.includes(realIndex)
@@ -343,18 +361,19 @@ export const GoogleLen = () => {
           : "text-green-500 dark:text-green-400"
       } 
     `}
-                    >
-                      {qrResults[realIndex]}
-                    </a>
-                  ) : (
-                    <p className="mt-2 text-sm italic text-black/40 dark:text-white/40">
-                      {t("noQRFound")}
-                    </p>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                      >
+                        {qrResults[realIndex]}
+                      </a>
+                    ) : (
+                      <p className="mt-2 text-sm italic text-black/40 dark:text-white/40">
+                        {t("noQRFound")}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
 
         <QrScanner ref={scannerRef} />

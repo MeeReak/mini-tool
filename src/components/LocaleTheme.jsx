@@ -4,7 +4,7 @@ import ThemeToggle from "./ThemeSwitcher";
 
 export const LocaleTheme = () => {
   return (
-    <div className=" flex gap-x-2 lg:gap-x-3 fixed right-5 top-8">
+    <div className=" flex gap-x-2 lg:gap-x-3 fixed left-5 top-8">
       <LocaleSwitcher />
       <ThemeToggle />
     </div>

@@ -67,8 +67,8 @@
     "clearFiles": "Clear Files",
     "removeFile": "Remove File",
     "processing": "Processing...",
-    "fileLimitExceeded": "You can only upload up to 10 files at a time!",
-    "pdfFIleLimit": "You can only upload pdf only 5 files at a time!"
+    "fileLimitExceeded": "You can only upload 10 files!",
+    "pdfFIleLimit": "You can only upload 5 pdf files!"
   },
   "FakeFilter": {
     "title": "Fake Filter",
