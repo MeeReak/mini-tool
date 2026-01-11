@@ -179,6 +179,7 @@ export const GoogleLen = () => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
+        showToast(t("copySuccess"), "success");
         setCopiedButton(key);
         setTimeout(() => setCopiedButton(""), 1500); // reset after 1.5s
       })
@@ -354,7 +355,7 @@ export const GoogleLen = () => {
                           setClickedQR((prev) => [...prev, realIndex]);
                         }}
                         className={`
-      mt-2 block text-sm break-all underline
+       mt-2 block text-sm break-all underline
       ${
         clickedQR.includes(realIndex)
           ? "text-gray-400 dark:text-gray-500" // visited style

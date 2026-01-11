@@ -198,8 +198,9 @@ export const CaseCover = () => {
             <button
               aria-label="Clear text"
               onClick={() => {
-                pushHistory(text);
+                pushHistory(text);  
                 setText("");
+                router.replace("?test=");
               }}
               className={`${actionBtn} bg-red-600 focus:ring-red-400 ${
                 !text && disabled

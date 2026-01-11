@@ -19,13 +19,17 @@ export const LocaleSwitcher = () => {
   };
 
   return (
-    <Image
-      src={langPath}
-      width={25}
-      height={25}
-      alt="image"
+    <div
       onClick={toggleLocale}
-      className=" cursor-pointer"
-    />
+      className="p-3 md:p-4 bg-[#f5dc50]/20 hover:bg-[#f5dc50]/30 border border-yellow-400 dark:border-yellow-500 rounded-full cursor-pointer"
+    >
+      <Image
+        src={langPath}
+        width={25}
+        height={25}
+        alt="image"
+        className=" cursor-pointer "
+      />
+    </div>
   );
 };

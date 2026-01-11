@@ -67,6 +67,7 @@
     "clearFiles": "Clear Files",
     "removeFile": "Remove File",
     "processing": "Processing...",
+    "copySuccess": "Copied",
     "fileLimitExceeded": "You can only upload 10 files!",
     "pdfFIleLimit": "You can only upload 5 pdf files!"
   },

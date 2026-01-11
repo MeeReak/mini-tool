@@ -21,6 +21,7 @@ export default function ThemeToggle() {
       title="Toggle theme"
       type="button"
       data-testid="theme-toggle"
+      className="p-3 md:p-4 bg-[#f5dc50]/20 hover:bg-[#f5dc50]/30 border border-yellow-400 dark:border-yellow-500 rounded-full cursor-pointer "
     >
       {theme === "dark" ? <Sun /> : <Moon />}
     </button>

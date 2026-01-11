@@ -57,13 +57,13 @@ export const Toast = ({
     <div
       className={`
         fixed top-4 right-4 z-50 
-        border rounded-xl max-w-[360px]
+        border rounded-xl min-w-[360px]
         ${config.border} ${config.bg}
         px-4 py-3 shadow-sm
         animate-slide-in
       `}
     >
-      <div className="flex items-center gap-8">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div
             className={`

@@ -132,8 +132,14 @@ export const ImageBase64 = () => {
 
   return (
     <section
-      aria-labelledby="image-base64-title"
-      className="p-6 rounded-xl shadow-md max-w-5xl mx-auto border border-gray-300 bg-white dark:bg-[#121826] dark:border-gray-700 dark:text-white"
+      aria-labelledby="image-base64"
+      className="
+      p-6 max-w-5xl mx-auto
+      rounded-2xl
+      border border-black/10 dark:border-white/10
+      bg-white dark:bg-[#060709]
+      shadow-sm
+    "
     >
       <header className="flex justify-between items-center mb-4">
         <h1
@@ -147,7 +153,14 @@ export const ImageBase64 = () => {
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="w-full border-2 border-dashed border-blue-400 rounded-xl px-6 py-10 lg:py-20 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950 dark:hover:bg-blue-900 transition-all cursor-pointer"
+        className="
+        border-2 border-dashed border-[#f5dc50]
+        rounded-2xl px-6 py-12
+        text-center
+        bg-[#f5dc50]/10
+        hover:bg-[#f5dc50]/20
+        transition cursor-pointer
+      "
         role="region"
         aria-describedby="drag-drop-desc"
       >
@@ -163,11 +176,11 @@ export const ImageBase64 = () => {
         <label htmlFor="fileInput" className="cursor-pointer">
           <p
             id="drag-drop-desc"
-            className="text-blue-700 dark:text-blue-300 font-medium text-base"
+            className="font-medium text-base text-[#060709] dark:text-white"
           >
             {t("dragLabel")}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+          <p className="text-sm text-black/60 dark:text-white/60 mt-1">
             {t("clickLabel")}
           </p>
         </label>
