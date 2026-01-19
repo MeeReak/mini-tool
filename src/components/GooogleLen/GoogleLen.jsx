@@ -11,13 +11,12 @@ export const GoogleLen = () => {
   const t = useTranslations("GoogleLen");
   const scannerRef = useRef();
   const pasteTimeoutRef = useRef(null);
-
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [qrResults, setQrResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [clickedQR, setClickedQR] = useState([]);
-  const [copiedButton, setCopiedButton] = useState("");
+  const [copiedButton, setCopiedButton] = useState(null);
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "info") => {
@@ -32,7 +31,7 @@ export const GoogleLen = () => {
     "application/pdf"
   ];
 
-  const MAX_TOTAL = 10;
+  const MAX_TOTAL = 15;
   const MAX_PDF = 5;
 
   const handleFiles = async (fileList) => {
@@ -175,12 +174,12 @@ export const GoogleLen = () => {
     };
   }, []);
 
-  const handleCopy = (text, key) => {
+  const handleCopy = (text, index) => {
     navigator.clipboard
       .writeText(text)
       .then(() => {
         showToast(t("copySuccess"), "success");
-        setCopiedButton(key);
+        setCopiedButton(index);
         setTimeout(() => setCopiedButton(""), 1500); // reset after 1.5s
       })
       .catch(() => console.error("Failed to copy"));
@@ -311,13 +310,12 @@ export const GoogleLen = () => {
                         Visited
                       </span>
                     )} */}
-
                       <div className=" flex items-center gap-4">
                         {qrResults[realIndex] !== null && (
                           <button
                             aria-label="Copy url"
                             onClick={() =>
-                              handleCopy(qrResults[realIndex], "copy")
+                              handleCopy(qrResults[realIndex], realIndex)
                             }
                             className="
                     p-2 text-xs rounded-md
@@ -325,7 +323,7 @@ export const GoogleLen = () => {
                     hover:brightness-90
                   "
                           >
-                            {copiedButton === "copy" ? (
+                            {copiedButton === realIndex ? (
                               <CheckIcon className="size-2 md:size-3" />
                             ) : (
                               <CopyIcon className="size-2 md:size-3" />

@@ -97,13 +97,27 @@ function isLeapMonth(jdStart, jdEnd) {
 }
 
 // Calculate Khmer zodiac year
-function getKhmerZodiacYear(lunar_year) {
-  return khZodiac[(lunar_year - 2020) % 12];
+function getKhmerZodiacYear(lunar_year, month, day) {
+  console.log(lunar_year, month);
+  let year = 0;
+
+  if (month >= 4) {
+    year = (lunar_year - 2020) % 12;
+  } else {
+    year = ((lunar_year - 2020) % 12) - 1;
+  }
+  return khZodiac[year];
 }
 
 // Calculate Khmer heavenly stem
-function getKhmerStem(year) {
-  return khStems[(year - 2019) % 10];
+function getKhmerStem(year, month) {
+  let stem = 0;
+  if (month >= 4) {
+    stem = ((year - 2020) % 10) + 1;
+  } else {
+    stem = (year - 2020) % 10;
+  }
+  return khStems[stem];
 }
 
 function replaceAll(text, dic) {
@@ -136,7 +150,7 @@ function gregorianToKhmerLunar(day, month, year) {
     newMoonJD = getNewMoonDay(k);
   }
 
-  let lunarDay = jd - newMoonJD + 1;
+  let lunarDay = jd - newMoonJD;
   if (lunarDay < 1) {
     k -= 1;
     newMoonJD = getNewMoonDay(k);
@@ -185,8 +199,8 @@ function gregorianToKhmerLunar(day, month, year) {
     monthName += " (Leap)";
   }
 
-  let zodiacYear = getKhmerZodiacYear(year);
-  let stem = getKhmerStem(year);
+  let zodiacYear = getKhmerZodiacYear(year, month, day);
+  let stem = getKhmerStem(year, month, day);
 
   lunarYear = replaceAll(String(lunarYear), khDigit);
   return {

@@ -150,10 +150,11 @@ export const ImageBase64 = () => {
         </h1>
       </header>
 
-      <div
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        className="
+      <label htmlFor="fileInput" className="cursor-pointer">
+        <div
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className="
         border-2 border-dashed border-[#f5dc50]
         rounded-2xl px-6 py-12
         text-center
@@ -161,19 +162,18 @@ export const ImageBase64 = () => {
         hover:bg-[#f5dc50]/20
         transition cursor-pointer
       "
-        role="region"
-        aria-describedby="drag-drop-desc"
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleInputChange}
-          className="hidden"
-          id="fileInput"
-        />
-        <label htmlFor="fileInput" className="cursor-pointer">
+          role="region"
+          aria-describedby="drag-drop-desc"
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleInputChange}
+            className="hidden"
+            id="fileInput"
+          />
           <p
             id="drag-drop-desc"
             className="font-medium text-base text-[#060709] dark:text-white"
@@ -183,8 +183,8 @@ export const ImageBase64 = () => {
           <p className="text-sm text-black/60 dark:text-white/60 mt-1">
             {t("clickLabel")}
           </p>
-        </label>
-      </div>
+        </div>
+      </label>
 
       {files.length > 0 && (
         <div className="mt-6 overflow-x-auto">
@@ -209,7 +209,7 @@ export const ImageBase64 = () => {
                   </td>
                   <td className="p-2 min-w-[80px] text-sm">{f.size}</td>
                   <td className="p-2 min-w-[200px]">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-7 relative overflow-hidden">
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded h-6 relative overflow-hidden">
                       <div
                         className={`h-full rounded transition-all duration-200
         ${
@@ -251,7 +251,7 @@ export const ImageBase64 = () => {
                           <button
                             disabled={!f.base64}
                             onClick={() => setShowCode(true)}
-                            className="whitespace-nowrap px-4 py-[7px] text-xs rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-all hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+                            className="whitespace-nowrap px-4 py-[6px] text-xs rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-all hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
                           >
                             {t("showCode")}
                           </button>
@@ -268,7 +268,7 @@ export const ImageBase64 = () => {
                               );
                             }}
                             disabled={!f.base64}
-                            className={`min-w-[100px] whitespace-nowrap py-[7px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
+                            className={`min-w-[100px] whitespace-nowrap py-[6px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
                               f.copiedImage
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -298,7 +298,7 @@ export const ImageBase64 = () => {
                               );
                             }}
                             disabled={!f.base64}
-                            className={`min-w-[100px] whitespace-nowrap py-[7px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
+                            className={`min-w-[100px] whitespace-nowrap py-[6px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
                               f.copiedCss
                                 ? "bg-blue-500 text-white"
                                 : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
@@ -381,7 +381,7 @@ export const ImageBase64 = () => {
                                   bgColor === "white" ? "black" : "white"
                                 )
                               }
-                              className={`w-[150px] flex items-center justify-center gap-2 p-2 rounded text-xs font-medium transition-colors duration-200
+                              className={`w-[180px] flex items-center justify-center gap-2 p-2 rounded text-xs font-medium transition-colors duration-200
                                           ${
                                             bgColor === "white"
                                               ? "bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
@@ -426,7 +426,7 @@ export const ImageBase64 = () => {
                                     );
                                   }}
                                   disabled={!f.base64}
-                                  className={`w-[110px] whitespace-nowrap p-2 text-xs rounded transition-all flex items-center justify-center gap-1 ${
+                                  className={`min-w-[110px] whitespace-nowrap py-[6px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
                                     f.copiedImg
                                       ? "bg-green-500 text-white"
                                       : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
