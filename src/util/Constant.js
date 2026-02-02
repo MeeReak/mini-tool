@@ -15,39 +15,6 @@ const CASE_TYPES = [
 
 const Photo_Base64 = "data:image/png;base64,";
 
-const khDay = {
-  1: "១កើត",
-  2: "២កើត",
-  3: "៣កើត",
-  4: "៤កើត",
-  5: "៥កើត",
-  6: "៦កើត",
-  7: "៧កើត",
-  8: "៨កើត",
-  9: "៩កើត",
-  10: "១០កើត",
-  11: "១១កើត",
-  12: "១២កើត",
-  13: "១៣កើត",
-  14: "១៤កើត",
-  15: "១៥កើត",
-  16: "១រោច",
-  17: "២រោច",
-  18: "៣រោច",
-  19: "៤រោច",
-  20: "៥រោច",
-  21: "៦រោច",
-  22: "៧រោច",
-  23: "៨រោច",
-  24: "៩រោច",
-  25: "១០រោច",
-  26: "១១រោច",
-  27: "១២រោច",
-  28: "១៣រោច",
-  29: "១៤រោច",
-  30: "១៥រោច"
-};
-
 const khDayInWeek = {
   Monday: "ចន្ទ",
   Tuesday: "អង្គារ",
@@ -86,37 +53,71 @@ const khDigit = {
   9: "៩"
 };
 
-const khMonth = [
+const KH_MONTH = [
+  "មិគសិរ",
+  "បុស្ស",
+  "មាឃ",
+  "ផល្គុន",
   "ចេត្រ",
   "ពិសាខ",
   "ជេស្ឋ",
+  "បឋមាសាឍ",
+  "ទុតិយាសាឍ",
   "អាសាឍ",
   "ស្រាពណ៍",
   "ភទ្របទ",
   "អស្សុជ",
-  "កត្តិក",
-  "មិគសិរ",
-  "បុស្ស",
-  "មាឃ",
-  "ផល្គុន"
+  "កត្តិក"
 ];
 
-const khZodiac = [
-  "ជូត",
-  "ឆ្លូវ",
-  "ខាល",
-  "ថោះ",
-  "រោង",
-  "ម្សាញ់",
-  "មមី",
-  "មមែ",
-  "វក",
-  "រកា",
-  "ច",
-  "កុរ"
+const yearMonths = [
+  "MĬKÔSĔR",
+  "BŎSS",
+  "MÉAKH",
+  "PHÂLKŬN",
+  "CHÉTR",
+  "VĬSAKH",
+  "CHÉSTH",
+  "ASATH",
+  "BÂTHÂMSATH",
+  "TŬTĔYÉASATH",
+  "SRAPÔNÂ",
+  "PHÔTRÔBÂT",
+  "ÂSSŎCH",
+  "KÂTDĔK"
 ];
 
-const khStems = [
+export const KH_ZODIAC = [
+  { code: "JUTE", kh: "ជូត", en: "Rat" },
+  { code: "CHLOV", kh: "ឆ្លូវ", en: "Ox" },
+  { code: "KARL", kh: "ខាល", en: "Tiger" },
+  { code: "THOS", kh: "ថោះ", en: "Rabbit" },
+  { code: "RORNG", kh: "រោង", en: "Dragon" },
+  { code: "MASAGN", kh: "ម្សាញ់", en: "Snake" },
+  { code: "MOMEE", kh: "មមី", en: "Horse" },
+  { code: "MOMAY", kh: "មមែ", en: "Goat" },
+  { code: "VOKE", kh: "វក", en: "Monkey" },
+  { code: "ROKA", kh: "រកា", en: "Rooster" },
+  { code: "JOR", kh: "ច", en: "Dog" },
+  { code: "KOR", kh: "កុរ", en: "Pig" }
+];
+
+const ZODIAC_YEARS = [
+  "JUTE",
+  "CHLOV",
+  "KARL",
+  "THOS",
+  "RORNG",
+  "MASAGN",
+  "MOMEE",
+  "MOMAY",
+  "VOKE",
+  "ROKA",
+  "JOR",
+  "KAOR"
+];
+
+const KH_STEM = [
   "ឯកស័ក",
   "ទោស័ក",
   "ត្រីស័ក",
@@ -135,8 +136,8 @@ export {
   khDay,
   khDayInWeek,
   khDigit,
-  khMonth,
-  khStems,
-  khZodiac,
+  KH_MONTH,
+  KH_STEM,
+  KH_ZODIAC,
   khMonthInWeek
 };

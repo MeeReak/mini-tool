@@ -94,7 +94,7 @@ const getKhmerDate = (string) => {
   const date = new Date(string);
   let day = date.getDate();
   if (day.toString().length < 2) {
-    day = `0${day}`;
+    day = `${day}`;
   }
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();

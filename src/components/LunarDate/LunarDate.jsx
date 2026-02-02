@@ -2,24 +2,30 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { gregorianToKhmerLunar } from "@/util/KhmerLunarDate";
-import { khDayInWeek } from "@/util/Constant";
+import { getLunarDate } from "@/util/LunarDate";
 import { getDate, getKhmerDate } from "../../util/Helper";
-import { Check, Copy } from "lucide-react"; // make sure you have lucide-react installed
+import { Check, Copy } from "lucide-react";
+import { Toast } from "../Toast";
 
 export const LunarDate = () => {
   const t = useTranslations("LunarDate");
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [lunarResult, setLunarResult] = useState(null);
   const [khmerDate, setKhmerDate] = useState("");
-  const [DefaultDate, setDefaultDate] = useState("");
-  const [copiedButton, setCopiedButton] = useState(""); // track which button was copied
+  const [lunarResult, setLunarResult] = useState("");
+  const [defaultDate, setDefaultDate] = useState("");
+  const [copiedButton, setCopiedButton] = useState("");
+  const [toast, setToast] = useState(null);
+  const isAnyCopied = copiedButton !== "";
+
+  const showToast = (message, type = "info") => {
+    setToast({ message, type });
+  };
 
   const handleDateChange = (event) => {
     const dateValue = new Date(event.target.value);
     if (isNaN(dateValue.getTime())) {
-      console.warn("Invalid date input:", event.target.value);
+      showToast(t("invalidDate"), "warning");
       return;
     }
     updateDateResults(dateValue);
@@ -27,27 +33,21 @@ export const LunarDate = () => {
 
   const updateDateResults = (dateValue) => {
     setSelectedDate(dateValue);
-
-    const dd = dateValue.getDate();
-    const mm = dateValue.getMonth() + 1;
-    const yyyy = dateValue.getFullYear();
-
-    const dayName =
-      khDayInWeek[dateValue.toLocaleDateString("en-US", { weekday: "long" })];
-    const result = gregorianToKhmerLunar(dd, mm, yyyy);
-
-    setLunarResult({
-      dayName,
-      ...result
-    });
-
+    const lunarDate = getLunarDate(dateValue);
     setKhmerDate(getKhmerDate(dateValue));
     setDefaultDate(getDate(dateValue));
+    setLunarResult(lunarDate);
   };
 
   useEffect(() => {
     updateDateResults(selectedDate);
-  }, []);
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const handleCopy = (text, key) => {
     navigator.clipboard
@@ -57,7 +57,7 @@ export const LunarDate = () => {
         setTimeout(() => setCopiedButton(""), 1500);
       })
       .catch(() => {
-        console.error("Failed to copy");
+        showToast(t("copyFailed"), "error");
       });
   };
 
@@ -71,7 +71,6 @@ export const LunarDate = () => {
           {t("chooseDate")}
         </h1>
       </header>
-
       <div>
         <input
           type="date"
@@ -80,104 +79,135 @@ export const LunarDate = () => {
           className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
         />
       </div>
-
-      {/* Lunar Date */}
-      {lunarResult && (
-        <div className="flex justify-between items-center">
-          <div className="w-[60%] rounded-md border bg-muted/30 px-3 py-2 text-sm text-foreground border-gray-300 dark:border-gray-600 dark:bg-gray-800 space-y-2 font-kantumruy">
-            <p>
-              ថ្ងៃ{lunarResult.dayName} {lunarResult.lunar_day} ខែ
-              {lunarResult.lunar_month} ឆ្នាំ{lunarResult.zodiac_year}{" "}
-              {lunarResult.stem} ព.ស. {lunarResult.lunar_year}
-            </p>
-          </div>
-          {lunarResult && (
-            <button
-              onClick={() =>
-                handleCopy(
-                  `ថ្ងៃ${lunarResult.dayName} ${lunarResult.lunar_day} ខែ${lunarResult.lunar_month} ឆ្នាំ${lunarResult.zodiac_year} ${lunarResult.stem} ព.ស. ${lunarResult.lunar_year}`,
-                  "lunar"
-                )
-              }
-              className={`min-w-[120px] whitespace-nowrap py-[7px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                copiedButton === "lunar"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
-            >
-              {copiedButton === "lunar" ? (
-                <div className="flex gap-x-2 items-center">
-                  <Check className="size-3" />
-                  {t("copySuccess")}
-                </div>
-              ) : (
-                <div className="flex gap-x-2 items-center">
-                  <Copy className="size-3" />
-                  {t("copyDate")}
-                </div>
-              )}
-            </button>
-          )}
-        </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
+      {/* Lunar Date */}
+      <div className="group flex justify-between items-center">
+        <div
+          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
+    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+        >
+          <p>{lunarResult}</p>
+        </div>
+
+        <div
+          className="
+      opacity-0 translate-y-2
+      group-hover:opacity-100 group-hover:translate-y-0
+      transition-all duration-300 ease-out
+      pointer-events-none group-hover:pointer-events-auto
+    "
+        >
+          <CopyButton
+            id="lunar"
+            copiedButton={copiedButton}
+            disabled={isAnyCopied && copiedButton !== "lunar"}
+            label={t("copyDate")}
+            success={t("copySuccess")}
+            onClick={() => {
+              showToast(t("copySuccess"), "success");
+              handleCopy(lunarResult, "lunar");
+            }}
+          />
+        </div>
+      </div>
 
       {/* Khmer Date */}
-      {khmerDate && (
-        <div className="flex justify-between items-center">
-          <div className="w-[60%] rounded-md border bg-muted/30 px-3 py-2 text-sm text-foreground border-gray-300 dark:border-gray-600 dark:bg-gray-800 space-y-2 font-kantumruy">
-            <p>{khmerDate}</p>
-          </div>
-          <button
-            onClick={() => handleCopy(khmerDate, "khmer")}
-            className={`min-w-[120px] whitespace-nowrap py-[7px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
-              copiedButton === "khmer"
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            {copiedButton === "khmer" ? (
-              <div className="flex gap-x-2 items-center">
-                <Check className="size-3" />
-                {t("copySuccess")}
-              </div>
-            ) : (
-              <div className="flex gap-x-2 items-center">
-                <Copy className="size-3" />
-                {t("copyDate")}
-              </div>
-            )}
-          </button>
+      <div className="group flex justify-between items-center">
+        <div
+          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
+    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+        >
+          <p>{khmerDate}</p>
         </div>
-      )}
+
+        <div
+          className="
+      opacity-0 translate-y-2
+      group-hover:opacity-100 group-hover:translate-y-0
+      transition-all duration-300 ease-out
+      pointer-events-none group-hover:pointer-events-auto
+    "
+        >
+          <CopyButton
+            id="khmer"
+            copiedButton={copiedButton}
+            disabled={isAnyCopied && copiedButton !== "khmer"}
+            label={t("copyDate")}
+            success={t("copySuccess")}
+            onClick={() => {
+              showToast(t("copySuccess"), "success");
+              handleCopy(khmerDate, "khmer");
+            }}
+          />
+        </div>
+      </div>
 
       {/* Default Date */}
-      {DefaultDate && (
-        <div className="flex justify-between items-center">
-          <div className="w-[60%] rounded-md border bg-muted/30 px-3 py-2 text-sm text-foreground border-gray-300 dark:border-gray-600 dark:bg-gray-800 space-y-2 font-nunito">
-            <p>{DefaultDate}</p>
-          </div>
-          <button
-            onClick={() => handleCopy(DefaultDate, "default")}
-            className={`min-w-[120px] whitespace-nowrap py-[7px] text-xs rounded transition-all flex items-center justify-center gap-1 ${
-              copiedButton === "default"
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-            }`}
-          >
-            {copiedButton === "default" ? (
-              <div className="flex gap-x-2 items-center">
-                <Check className="size-3" />
-                {t("copySuccess")}
-              </div>
-            ) : (
-              <div className="flex gap-x-2 items-center">
-                <Copy className="size-3" />
-                {t("copyDate")}
-              </div>
-            )}
-          </button>
+      <div className="group flex justify-between items-center">
+        <div
+          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
+    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+        >
+          <p>{defaultDate}</p>
         </div>
-      )}
+
+        <div
+          className="
+      opacity-0 translate-y-2
+      group-hover:opacity-100 group-hover:translate-y-0
+      transition-all duration-300 ease-out
+      pointer-events-none group-hover:pointer-events-auto
+    "
+        >
+          <CopyButton
+            id="default"
+            copiedButton={copiedButton}
+            disabled={isAnyCopied && copiedButton !== "default"}
+            label={t("copyDate")}
+            success={t("copySuccess")}
+            onClick={() => {
+              showToast(t("copySuccess"), "success");
+              handleCopy(defaultDate, "default");
+            }}
+          />
+        </div>
+      </div>
     </section>
   );
 };
+
+const CopyButton = ({
+  id,
+  disabled,
+  copiedButton,
+  onClick,
+  label,
+  success
+}) => (
+  <button
+    disabled={disabled}
+    onClick={onClick}
+    className="min-w-[120px] py-[10px] text-xs rounded transition-all flex items-center justify-center gap-1
+      bg-gray-200 dark:bg-gray-700
+      hover:bg-gray-300 dark:hover:bg-gray-600
+      disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    {copiedButton === id ? (
+      <>
+        <Check className="size-3" />
+        {success}
+      </>
+    ) : (
+      <>
+        <Copy className="size-3" />
+        {label}
+      </>
+    )}
+  </button>
+);

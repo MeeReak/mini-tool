@@ -94,8 +94,10 @@
     "description": "Convert date into Khmer Lunar date",
     "inputLabel": "Type text in date format",
     "chooseDate": "ជ្រើសរើសកាលបរិច្ឆេទ",
+    "invalidDate": "កាលបរិច្ឆេទមិនត្រឹមត្រូវ",
+    "copyFailed": "ចម្លងកាលបរិច្ឆេទបរាជ័យ",
     "copySuccess": "បានចម្លង!",
-    "copyDate": "ចម្លងកាលបរិច្ឆេទ"
+    "copyDate": "ចម្លង"
   },
   "JsonData": {
     "title": "ទិន្នន័យ Json",

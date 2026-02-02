@@ -42,7 +42,7 @@ export const Toast = ({
   title,
   message,
   type = "info",
-  duration = 3000,
+  duration = 1500,
   onClose
 }) => {
   const config = variants[type];

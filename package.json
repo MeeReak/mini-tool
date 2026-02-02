@@ -15,6 +15,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.1.4",
     "jsqr": "^1.4.0",
+    "khmercal": "^0.1.0",
     "lucide-react": "^0.528.0",
     "next": "^15.4.3",
     "next-intl": "^3.26.1",

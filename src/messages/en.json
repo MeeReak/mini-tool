@@ -94,8 +94,10 @@
     "description": "Convert a Gregorian date into the Khmer Lunar calendar",
     "inputLabel": "Enter a date",
     "chooseDate": "Select a date",
+    "invalidDate": "Invalid date",
+    "copyFailed": "Failed to copy",
     "copySuccess": "Copied!",
-    "copyDate": "Copy Date"
+    "copyDate": "Copy"
   },
   "JsonData": {
     "title": "Json Data",
