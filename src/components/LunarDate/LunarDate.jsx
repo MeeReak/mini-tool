@@ -64,7 +64,10 @@ export const LunarDate = () => {
   return (
     <section
       aria-labelledby="lunar-date-title"
-      className="mx-auto space-y-4 max-w-2xl transition-all rounded-lg border bg-card p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+      className="mx-auto space-y-4 max-w-2xl transition-all rounded-xl bg-card p-6 
+      border border-black/10 dark:border-white/10
+      bg-white dark:bg-[#060709]
+      shadow-sm"
     >
       <header className="flex justify-between items-center">
         <h1 id="lunar-date-title" className="block font-semibold text-xl">
@@ -76,7 +79,9 @@ export const LunarDate = () => {
           type="date"
           value={selectedDate.toISOString().split("T")[0]}
           onChange={handleDateChange}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+          className="w-full rounded-md border-input bg-background py-2 px-3 text-sm shadow-sm transition-colors focus:border-[#f5dc50] focus:outline-none focus:ring-1 focus:ring-[#f5dc50] font-kantumruy
+          border border-black/10 dark:border-white/10
+                bg-black/5 dark:bg-white/5 dark:hover:bg-white/10"
         />
       </div>
       {toast && (
@@ -87,127 +92,111 @@ export const LunarDate = () => {
         />
       )}
       {/* Lunar Date */}
-      <div className="group flex justify-between items-center">
+      <div className="group">
         <div
-          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
-    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+          className="w-full rounded-md px-3 py-2 text-sm
+    flex justify-between items-center font-kantumruy border border-black/10 dark:border-white/10
+                bg-black/5 dark:bg-white/5 dark:hover:bg-white/10"
         >
           <p>{lunarResult}</p>
-        </div>
-
-        <div
-          className="
-      opacity-0 translate-y-2
-      group-hover:opacity-100 group-hover:translate-y-0
-      transition-all duration-300 ease-out
-      pointer-events-none group-hover:pointer-events-auto
-    "
-        >
-          <CopyButton
-            id="lunar"
-            copiedButton={copiedButton}
-            disabled={isAnyCopied && copiedButton !== "lunar"}
-            label={t("copyDate")}
-            success={t("copySuccess")}
-            onClick={() => {
-              showToast(t("copySuccess"), "success");
-              handleCopy(lunarResult, "lunar");
-            }}
-          />
+          <div
+            className="
+    opacity-0 translate-y-1 scale-95
+    group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+    transition-all duration-200 ease-out
+    pointer-events-none group-hover:pointer-events-auto
+  "
+          >
+            <CopyButton
+              id="lunar"
+              copiedButton={copiedButton}
+              disabled={isAnyCopied && copiedButton !== "lunar"}
+              onClick={() => {
+                showToast(t("copySuccess"), "success");
+                handleCopy(lunarResult, "lunar");
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Khmer Date */}
-      <div className="group flex justify-between items-center">
+      <div className="group">
         <div
-          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
-    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+          className="w-full rounded-md px-3 py-2 text-sm
+    flex justify-between items-center font-kantumruy border border-black/10 dark:border-white/10
+                bg-black/5 dark:bg-white/5 dark:hover:bg-white/10"
         >
           <p>{khmerDate}</p>
-        </div>
-
-        <div
-          className="
-      opacity-0 translate-y-2
-      group-hover:opacity-100 group-hover:translate-y-0
-      transition-all duration-300 ease-out
-      pointer-events-none group-hover:pointer-events-auto
-    "
-        >
-          <CopyButton
-            id="khmer"
-            copiedButton={copiedButton}
-            disabled={isAnyCopied && copiedButton !== "khmer"}
-            label={t("copyDate")}
-            success={t("copySuccess")}
-            onClick={() => {
-              showToast(t("copySuccess"), "success");
-              handleCopy(khmerDate, "khmer");
-            }}
-          />
+          <div
+            className="
+    opacity-0 translate-y-1 scale-95
+    group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+    transition-all duration-200 ease-out
+    pointer-events-none group-hover:pointer-events-auto
+  "
+          >
+            <CopyButton
+              id="khmer"
+              copiedButton={copiedButton}
+              disabled={isAnyCopied && copiedButton !== "khmer"}
+              onClick={() => {
+                showToast(t("copySuccess"), "success");
+                handleCopy(khmerDate, "khmer");
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Default Date */}
-      <div className="group flex justify-between items-center">
+      <div className="group">
         <div
-          className="w-[70%] rounded-md border bg-muted/30 px-3 py-2 text-sm
-    border-gray-300 dark:border-gray-600 dark:bg-gray-800 font-kantumruy"
+          className="w-full rounded-md px-3 py-2 text-sm
+    flex justify-between items-center font-kantumruy border border-black/10 dark:border-white/10
+                bg-black/5 dark:bg-white/5 dark:hover:bg-white/10"
         >
           <p>{defaultDate}</p>
-        </div>
-
-        <div
-          className="
-      opacity-0 translate-y-2
-      group-hover:opacity-100 group-hover:translate-y-0
-      transition-all duration-300 ease-out
-      pointer-events-none group-hover:pointer-events-auto
-    "
-        >
-          <CopyButton
-            id="default"
-            copiedButton={copiedButton}
-            disabled={isAnyCopied && copiedButton !== "default"}
-            label={t("copyDate")}
-            success={t("copySuccess")}
-            onClick={() => {
-              showToast(t("copySuccess"), "success");
-              handleCopy(defaultDate, "default");
-            }}
-          />
+          <div
+            className="
+    opacity-0 translate-y-1 scale-95
+    group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+    transition-all duration-200 ease-out
+    pointer-events-none group-hover:pointer-events-auto
+  "
+          >
+            <CopyButton
+              id="default"
+              copiedButton={copiedButton}
+              disabled={isAnyCopied && copiedButton !== "default"}
+              onClick={() => {
+                showToast(t("copySuccess"), "success");
+                handleCopy(defaultDate, "default");
+              }}
+            />
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-const CopyButton = ({
-  id,
-  disabled,
-  copiedButton,
-  onClick,
-  label,
-  success
-}) => (
-  <button
-    disabled={disabled}
-    onClick={onClick}
-    className="min-w-[120px] py-[10px] text-xs rounded transition-all flex items-center justify-center gap-1
-      bg-gray-200 dark:bg-gray-700
-      hover:bg-gray-300 dark:hover:bg-gray-600
-      disabled:opacity-50 disabled:cursor-not-allowed"
-  >
+const brandActionBtn = `
+  p-2 rounded-md flex items-center justify-center gap-1
+  bg-[#f5dc50] text-black
+  transition-all duration-150 ease-out
+  enabled:hover:brightness-90
+  enabled:active:scale-95
+  focus:outline-none focus:ring-1 focus:ring-[#f5dc50]
+  disabled:opacity-50 disabled:cursor-not-allowed
+`;
+
+const CopyButton = ({ id, disabled, copiedButton, onClick }) => (
+  <button disabled={disabled} onClick={onClick} className={brandActionBtn}>
     {copiedButton === id ? (
-      <>
-        <Check className="size-3" />
-        {success}
-      </>
+      <Check className="size-3" />
     ) : (
-      <>
-        <Copy className="size-3" />
-        {label}
-      </>
+      <Copy className="size-3" />
     )}
   </button>
 );

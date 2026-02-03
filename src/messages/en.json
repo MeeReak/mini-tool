@@ -5,7 +5,7 @@
   },
   "Homepage": {
     "title": "Mini Tool",
-    "description": "these tool are not  available in your region",
+    "description": "these tool are not available in your region",
     "developerAlt": "developer",
     "easy": "Easy to Use",
     "easyDesc": "Simple and minimal tools that just work.",
@@ -93,7 +93,7 @@
     "title": "Lunar Date",
     "description": "Convert a Gregorian date into the Khmer Lunar calendar",
     "inputLabel": "Enter a date",
-    "chooseDate": "Select a date",
+    "chooseDate": "Select any date",
     "invalidDate": "Invalid date",
     "copyFailed": "Failed to copy",
     "copySuccess": "Copied!",

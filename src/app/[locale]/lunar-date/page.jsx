@@ -5,12 +5,11 @@ import { getTranslations } from "next-intl/server";
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
-  const baseUrl = "https://next-js-intl.vercel.app";
+  const baseUrl = "https://mini-tool.vercel.app";
   const isDefaultLocale = locale === "km";
 
   return {
     title: t("LunarDate.title"),
-    description: t("LunarDate.description"),
     openGraph: {
       title: t("LunarDate.title"),
       description: t("LunarDate.description"),
@@ -51,7 +50,7 @@ export async function generateMetadata({ params }) {
         km: `${baseUrl}/lunar-date`
       }
     },
-    keywords: ["qr code reader", "image upload", "qr scanner", "free tool"],
+    keywords: ["khmer lunar date", "lunar date"],
     robots: {
       index: true,
       follow: true
@@ -69,7 +68,7 @@ export default function Page() {
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "All",
     description: t("description"),
-    url: "https://next-js-intl.vercel.app/lunar-date",
+    url: "https://mini-tool.vercel.app/lunar-date",
     author: {
       "@type": "Organization",
       name: "Tithyareak App"

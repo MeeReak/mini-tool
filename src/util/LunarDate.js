@@ -37,7 +37,7 @@ function getLunarDate(date) {
   const khStem = getKhmerStem(lunarDate.sequence);
   const sak = replaceAll(lunarDate.years.BE, khDigit);
 
-  return `ថ្ងៃ${day} ${khDay} ខែ${khMonth} ឆ្នាំ${khZodiac} ${khStem} ពុទ្ធសករាជ ${sak}`;
+  return `ថ្ងៃ${day} ${khDay} ខែ${khMonth} ឆ្នាំ${khZodiac} ${khStem} ព.ស.${sak}`;
 }
 
 export { getLunarDate };

@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "https://next-js-intl.vercel.app",
+  siteUrl: "https://mini-tool.vercel.app",
   generateRobotsTxt: true,
   i18n: {
     locales: ["km", "en"],

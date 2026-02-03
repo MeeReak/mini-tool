@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
   const { locale } = await params;
   const t = await getTranslations({ locale });
   const isDefaultLocale = locale === "km";
-  const baseUrl = "https://next-js-intl.vercel.app";
+  const baseUrl = "https://mini-tool.vercel.app";
 
   return {
     title: t("CaseConvert.title"),
@@ -103,7 +103,7 @@ export default function Home() {
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "All",
     description: t("description"),
-    url: "https://next-js-intl.vercel.app/case-converter", // optionally append locale here
+    url: "https://mini-tool.vercel.app/case-converter", // optionally append locale here
     author: {
       "@type": "Organization",
       name: "Tithyareak App"

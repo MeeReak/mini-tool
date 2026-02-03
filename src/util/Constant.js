@@ -99,7 +99,7 @@ export const KH_ZODIAC = [
   { code: "VOKE", kh: "វក", en: "Monkey" },
   { code: "ROKA", kh: "រកា", en: "Rooster" },
   { code: "JOR", kh: "ច", en: "Dog" },
-  { code: "KOR", kh: "កុរ", en: "Pig" }
+  { code: "KAOR", kh: "កុរ", en: "Pig" }
 ];
 
 const ZODIAC_YEARS = [
@@ -133,11 +133,9 @@ const KH_STEM = [
 export {
   CASE_TYPES,
   Photo_Base64,
-  khDay,
   khDayInWeek,
   khDigit,
   KH_MONTH,
   KH_STEM,
-  KH_ZODIAC,
   khMonthInWeek
 };

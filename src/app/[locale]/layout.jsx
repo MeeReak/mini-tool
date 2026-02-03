@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
   const t = await getTranslations({ locale });
 
   const isDefaultLocale = locale === "km";
-  const baseUrl = "https://next-js-intl.vercel.app";
+  const baseUrl = "https://mini-tool.vercel.app";
   const manifestUrl = isDefaultLocale
     ? "/manifest.json"
     : `/${locale}/manifest.json`;
