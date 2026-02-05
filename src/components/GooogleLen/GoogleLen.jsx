@@ -333,11 +333,7 @@ export const GoogleLen = () => {
                         <button
                           aria-label="Remove url"
                           onClick={() => removeFile(realIndex)}
-                          className="
-                    p-2 text-xs rounded-md
-                    bg-[#f5dc50] text-black
-                    hover:brightness-90
-                  "
+                          className="p-2 text-xs rounded-md bg-[#f5dc50] text-black hover:brightness-90 enabled:active:scale-95"
                         >
                           <XIcon className="size-2 md:size-3" />
                         </button>

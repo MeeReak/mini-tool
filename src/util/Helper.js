@@ -111,6 +111,30 @@ const getDate = (string) => {
   return `Phnom Penh, ${month} ${day}, ${year}`;
 };
 
+const getSnakeCase = (string) => {
+  let snakeCase = "";
+
+  for (const char of string) {
+    if (char.toLowerCase() !== char.toUpperCase()) {
+      {
+        if (string[0] === char.toUpperCase()) {
+          snakeCase += char.toLowerCase();
+        } else {
+          if (char.toLowerCase() === char) {
+            snakeCase += char;
+          } else {
+            snakeCase += char.replace(char, `_${char.toLowerCase()}`);
+          }
+        }
+      }
+    }
+  }
+  return snakeCase;
+};
+
+const getLowerFirst = (value) =>
+  value ? value[0].toLowerCase() + value.slice(1) : value;
+
 export {
   randomString,
   generateUUID,
@@ -123,5 +147,7 @@ export {
   getKhmerDegree,
   randomMajor,
   getKhmerMajor,
-  getDate
+  getDate,
+  getLowerFirst,
+  getSnakeCase
 };

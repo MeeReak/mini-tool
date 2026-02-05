@@ -2,20 +2,15 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Photo_Base64 } from "../../util/Constant";
+import { generateUUID, getLowerFirst, getSnakeCase } from "../../util/Helper";
 import {
-  generateUUID,
-  randomString,
-  randomDate,
-  getKhmerDate,
-  randomAge,
-  getKhmerNumber,
-  randomDegree,
-  getKhmerDegree,
-  randomMajor,
-  getKhmerMajor,
-  getDate
-} from "../../util/Helper";
+  CheckIcon,
+  Copy,
+  CpuIcon,
+  PlusIcon,
+  Trash2Icon,
+  XIcon
+} from "lucide-react";
 
 export const DynamicForm = () => {
   const t = useTranslations("FakeFilter");
@@ -24,11 +19,18 @@ export const DynamicForm = () => {
     { field: "", type: "string" }
   ]);
   const [certificateFields, setCertificateFields] = useState([
-    { field: "", type: "string" }
+    { field: "institution", type: "string" },
+    { field: "institutionKm", type: "string" }
   ]);
   const [generatedSchema, setGeneratedSchema] = useState(null);
   const [sampleData, setSampleData] = useState(null);
-  const [copySuccess, setCopySuccess] = useState("");
+  const [cases, setCases] = useState("camelCase");
+  const [copiedButton, setCopiedButton] = useState("");
+  const isAnyCopied = copiedButton !== "";
+  const [institution, setInstitution] = useState({
+    en: "",
+    km: ""
+  });
 
   const addRecipientField = () => {
     setRecipientFields([...recipientFields, { field: "", type: "string" }]);
@@ -46,63 +48,37 @@ export const DynamicForm = () => {
     setCertificateFields(certificateFields.filter((_, i) => i !== index));
   };
 
-  const date = randomDate();
-  const age = randomAge();
-  const degree = randomDegree();
-  const major = randomMajor();
-  const khmerLunarDateSample = "1st Waxing of Kason 2569 BE";
-  const khmerDateSample = getKhmerDate(date);
-  const DateSample = getDate(date);
-
-  const generateSampleValue = (fieldName, type, rootId) => {
+  const generateSampleValue = (fieldName, type, uuid) => {
     if (fieldName.toLowerCase() === "id") {
-      return rootId;
+      return uuid;
+    }
+    if (fieldName.toLowerCase() === "institution") {
+      return institution.en;
+    }
+    if (fieldName === "institutionKm" || fieldName === "institution_km") {
+      return institution.km;
     }
     switch (type) {
       case "string":
-        if (fieldName.toLowerCase().includes("namekm"))
-          return randomString().km;
-        if (fieldName.toLowerCase().includes("name")) return randomString().en;
         return "Sample Text";
-      case "age":
-        return age;
-
-      case "Khmer age":
-        return getKhmerNumber(age);
-
-      case "degree":
-        return degree;
-
-      case "Khmer degree":
-        return getKhmerDegree(degree);
-
-      case "major":
-        return major;
-
-      case "Khmer major":
-        return getKhmerMajor(major);
-
-      case "PhotoBase64":
-        return Photo_Base64;
-
-      case "Khmer lunar date":
-        return khmerLunarDateSample;
-
-      case "Khmer date":
-        return khmerDateSample;
-
-      case "date":
-        return DateSample;
-
-      case "date(yyyy-mm-dd)":
-        return date;
-
       default:
         return null;
     }
   };
 
+  const getFieldKey = (field) =>
+    cases === "snake_case"
+      ? getSnakeCase(field.trim())
+      : getLowerFirst(field.trim());
+
   const handleGenerate = () => {
+    const uuid = generateUUID();
+    const sample = {
+      id: uuid,
+      recipient: {},
+      certificate: {}
+    };
+
     const schema = {
       type: "object",
       required: ["id", "recipient", "certificate"],
@@ -110,86 +86,116 @@ export const DynamicForm = () => {
         id: { type: "string" },
         recipient: {
           type: "object",
-          required: recipientFields.map((f) => f.field).filter(Boolean),
+          required: recipientFields
+            .map((f) => getFieldKey(f.field))
+            .filter(Boolean),
           properties: {}
         },
         certificate: {
           type: "object",
-          required: [
-            "institution",
-            "institution_km",
-            ...certificateFields.map((f) => f.field).filter(Boolean)
-          ],
-          properties: {
-            institution: {
-              type: "string",
-              enum: ["Harverd School"]
-            },
-            institution_km: { type: "string", enum: ["Harverd School"] }
-          }
+          required: certificateFields
+            .map((f) => getFieldKey(f.field))
+            .filter(Boolean),
+          properties: {}
         }
       }
     };
 
     recipientFields.forEach((f) => {
-      if (f.field) {
-        schema.properties.recipient.properties[f.field] = { type: "string" };
-      }
+      if (!f.field) return;
+
+      const key = getFieldKey(f.field);
+
+      schema.properties.recipient.properties[key] = {
+        type: "string"
+      };
     });
 
     certificateFields.forEach((f) => {
-      if (f.field) {
-        schema.properties.certificate.properties[f.field] = { type: "string" };
+      if (!f.field) return;
+
+      const key = getFieldKey(f.field);
+      const lower = f.field.toLowerCase();
+
+      if (lower === "institution") {
+        schema.properties.certificate.properties[key] = {
+          type: "string",
+          enum: [institution.en]
+        };
+        return;
       }
+
+      if (lower === "institutionkm") {
+        schema.properties.certificate.properties[key] = {
+          type: "string",
+          enum: [institution.km]
+        };
+        return;
+      }
+
+      schema.properties.certificate.properties[key] = {
+        type: "string"
+      };
     });
 
     setGeneratedSchema(schema);
 
-    const rootId = generateUUID();
-    const sample = {
-      id: rootId,
-      recipient: {},
-      certificate: {
-        institution: "Harverd School",
-        institution_km: "Harverd School"
-      }
-    };
-
     recipientFields.forEach((f) => {
-      if (f.field) {
-        sample.recipient[f.field] = String(
-          generateSampleValue(f.field, f.type, rootId)
-        );
-      }
+      if (!f.field) return;
+
+      const key = getFieldKey(f.field);
+
+      sample.recipient[key] = String(
+        generateSampleValue(f.field, f.type, uuid)
+      );
     });
 
     certificateFields.forEach((f) => {
-      if (f.field) {
-        sample.certificate[f.field] = String(
-          generateSampleValue(f.field, f.type, rootId)
-        );
-      }
+      if (!f.field) return;
+
+      const key = getFieldKey(f.field);
+
+      sample.certificate[key] = String(
+        generateSampleValue(f.field, f.type, uuid)
+      );
     });
 
     setSampleData(sample);
-    setCopySuccess("");
+    setCopiedButton("");
   };
 
   const hasEmptyFields =
     recipientFields.some((f) => !f.field.trim()) ||
     certificateFields.some((f) => !f.field.trim());
 
+  const handleCopy = (text, key) => {
+    navigator.clipboard.writeText(JSON.stringify(text, null, 2)).then(() => {
+      setCopiedButton(key);
+      setTimeout(() => setCopiedButton(""), 1500);
+    });
+  };
+
+  const BrandCopyButton = ({ id, disabled, copiedButton, onClick }) => (
+    <button disabled={disabled} onClick={onClick} className={btnBrand}>
+      {copiedButton === id ? (
+        <CheckIcon className="size-3" />
+      ) : (
+        <Copy className="size-3" />
+      )}
+    </button>
+  );
+
   return (
     <div className="space-y-6">
       {/* Recipient Section */}
-      <section className="p-6 shadow-sm border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-[#121826] dark:text-white">
+      <section
+        className="p-6 shadow-sm border border-black/10 dark:border-white/10
+      bg-white dark:bg-[#060709] rounded-lg"
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg">{t("recipientTitle")}</h2>
-          <button
-            onClick={addRecipientField}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            {t("addButton")}
+          <button onClick={addRecipientField} className={btnSecondary}>
+            <PlusIcon className="size-3" />
           </button>
         </div>
         {recipientFields.map((field, index) => (
@@ -200,52 +206,30 @@ export const DynamicForm = () => {
               value={field.field}
               onChange={(e) => {
                 const updated = [...recipientFields];
-                updated[index].field = e.target.value;
+                updated[index].field = e.target.value.trim();
                 setRecipientFields(updated);
               }}
-              className="flex-1 px-2 py-1 border rounded dark:bg-gray-900 dark:text-white dark:border-gray-700"
+              className="flex-1 px-2 py-1 border rounded border-black/10 dark:border-white/10 bg-white dark:bg-[#060709]"
             />
-            <select
-              value={field.type}
-              onChange={(e) => {
-                const updated = [...recipientFields];
-                updated[index].type = e.target.value;
-                setRecipientFields(updated);
-              }}
-              className="w-48 px-2 py-[6px] border rounded dark:bg-gray-900 dark:text-white dark:border-gray-700"
-            >
-              <option value="string">string</option>
-              <option value="age">age</option>
-              <option value="Khmer age">Khmer age</option>
-              <option value="degree">Degree</option>
-              <option value="Khmer degree">Khmer Degree</option>
-              <option value="major">Major</option>
-              <option value="Khmer major">Khmer Major</option>
-              <option value="PhotoBase64">PhotoBase64</option>
-              <option value="Khmer lunar date">Khmer lunar date</option>
-              <option value="Khmer date">Khmer date</option>
-              <option value="date">Full date</option>
-              <option value="date(yyyy-mm-dd)">date (yyyy-mm-dd)</option>
-            </select>
             <button
               onClick={() => removeRecipientField(index)}
-              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              className={btnBrand}
             >
-              {t("removeButton")}
+              <XIcon className="size-3" />
             </button>
           </div>
         ))}
       </section>
 
       {/* Certificate Section */}
-      <section className="p-6 shadow-sm border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-900 dark:text-white">
+      <section
+        className="p-6 shadow-sm border border-black/10 dark:border-white/10
+      bg-white dark:bg-[#060709] rounded-lg"
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg ">{t("certificateTitle")}</h2>
-          <button
-            onClick={addCertificateField}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            {t("addButton")}
+          <button onClick={addCertificateField} className={btnSecondary}>
+            <PlusIcon className="size-3" />
           </button>
         </div>
         {certificateFields.map((field, index) => (
@@ -256,38 +240,45 @@ export const DynamicForm = () => {
               value={field.field}
               onChange={(e) => {
                 const updated = [...certificateFields];
-                updated[index].field = e.target.value;
+                updated[index].field = e.target.value.trim();
                 setCertificateFields(updated);
               }}
-              className="flex-1 px-2 py-1  border rounded dark:bg-gray-900 dark:text-white dark:border-gray-700"
+              className="flex-1 px-2 py-1 border rounded border-black/10 dark:border-white/10 bg-white dark:bg-[#060709]"
             />
-            <select
-              value={field.type}
-              onChange={(e) => {
-                const updated = [...certificateFields];
-                updated[index].type = e.target.value;
-                setCertificateFields(updated);
-              }}
-              className="w-48 px-2 py-[6px] border rounded dark:bg-gray-900 dark:text-white dark:border-gray-700"
-            >
-              <option value="string">string</option>
-              <option value="age">age</option>
-              <option value="Khmer age">Khmer age</option>
-              <option value="degree">Degree</option>
-              <option value="Khmer degree">Khmer Degree</option>
-              <option value="major">Major</option>
-              <option value="Khmer major">Khmer Major</option>
-              <option value="PhotoBase64">PhotoBase64</option>
-              <option value="Khmer lunar date">Khmer lunar date</option>
-              <option value="Khmer date">Khmer date</option>
-              <option value="date">Full date</option>
-              <option value="date(yyyy-mm-dd)">date (yyyy-mm-dd)</option>
-            </select>
+
+            {field.field == "institution" && (
+              <input
+                type="text"
+                placeholder="value"
+                value={institution.en}
+                onChange={(e) =>
+                  setInstitution((prev) => ({
+                    ...prev,
+                    en: e.target.value.replace(/ /g, "")
+                  }))
+                }
+                className="flex-1 px-2 py-1 border rounded border-black/10 dark:border-white/10 bg-white dark:bg-[#060709]"
+              />
+            )}
+            {field.field == "institutionKm" && (
+              <input
+                type="text"
+                placeholder="value"
+                value={institution.km}
+                onChange={(e) =>
+                  setInstitution((prev) => ({
+                    ...prev,
+                    km: e.target.value
+                  }))
+                }
+                className="flex-1 px-2 py-1 border rounded border-black/10 dark:border-white/10 bg-white dark:bg-[#060709] font-kantumruy"
+              />
+            )}
             <button
               onClick={() => removeCertificateField(index)}
-              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              className={btnBrand}
             >
-              {t("removeButton")}
+              <XIcon className="size-3" />
             </button>
           </div>
         ))}
@@ -295,95 +286,118 @@ export const DynamicForm = () => {
 
       {/* Buttons Row */}
       <div className="flex gap-3 justify-between">
-        <div className="flex gap-3">
+        <div className="relative inline-flex bg-gray-200 dark:bg-white/10 rounded-full p-1">
+          {/* Sliding indicator */}
+          <span
+            className={`
+      absolute top-1 bottom-1 w-1/2 rounded-full
+      bg-white dark:bg-[#060709]
+      shadow-sm
+      transition-all duration-300 ease-out
+      ${cases === "snake_case" ? "left-1" : "left-[48%]"}
+    `}
+          />
+
           <button
-            onClick={() => {
-              if (!generatedSchema) return;
-              navigator.clipboard.writeText(
-                JSON.stringify(generatedSchema, null, 2)
-              );
-              setCopySuccess(t("copySchemaSuccess"));
-              setTimeout(() => setCopySuccess(""), 2000);
-            }}
-            disabled={!generatedSchema}
-            className={`px-3 py-1 rounded bg-blue-600 text-white ${
-              generatedSchema
-                ? "hover:bg-blue-700 cursor-pointer"
-                : "cursor-not-allowed opacity-50"
-            }`}
+            onClick={() => setCases("snake_case")}
+            className={`
+      relative z-10 px-3 py-1 text-sm rounded-full
+      transition-colors duration-200
+      ${cases === "snake_case" ? "text-black dark:text-white" : "text-gray-500"}
+    `}
           >
-            {t("copyJson")}
-          </button>
-          <button
-            onClick={() => {
-              if (!sampleData) return;
-              navigator.clipboard.writeText(
-                JSON.stringify(sampleData, null, 2)
-              );
-              setCopySuccess(t("copySampleSuccess"));
-              setTimeout(() => setCopySuccess(""), 2000);
-            }}
-            disabled={!sampleData}
-            className={`px-3 py-1 rounded bg-indigo-600 text-white ${
-              sampleData
-                ? "hover:bg-indigo-700 cursor-pointer"
-                : "cursor-not-allowed opacity-50"
-            }`}
-          >
-            {t("copyData")}
+            snake_case
           </button>
 
-          {/* Copy Success Message */}
-          {copySuccess && (
-            <div className="mt-2 text-sm text-green-600 dark:text-green-400 ">
-              {copySuccess}
-            </div>
-          )}
+          <button
+            onClick={() => setCases("camelCase")}
+            className={`
+      relative z-10 px-4 py-1 text-sm rounded-full
+      transition-colors duration-200
+      ${cases === "camelCase" ? "text-black dark:text-white" : "text-gray-500"}
+    `}
+          >
+            camelCase
+          </button>
         </div>
+
         <div className="flex gap-3">
           <button
             onClick={handleGenerate}
             disabled={hasEmptyFields}
-            className={`px-3 py-1 rounded bg-green-600 text-white ${
-              hasEmptyFields
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-green-700 cursor-pointer"
-            }`}
+            className={btnSuccess}
           >
-            {t("generateButton")}
+            <CpuIcon className="size-3" />
           </button>
 
           <button
             onClick={() => {
               setRecipientFields([{ field: "", type: "string" }]);
-              setCertificateFields([{ field: "", type: "string" }]);
+              setCertificateFields([
+                { field: "institution", type: "string" },
+                { field: "institutionKm", type: "string" }
+              ]);
               setGeneratedSchema(null);
               setSampleData(null);
-              setCopySuccess("");
+              setCopiedButton("");
             }}
-            className={`px-3 py-1 rounded bg-red-600 text-white ${
-              hasEmptyFields
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-red-700 cursor-pointer"
-            }`}
+            className={btnDanger}
           >
-            {t("clearButton")}
+            <Trash2Icon className="size-3" />
           </button>
         </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="grid grid-cols-[1fr,1fr] gap-4">
         {/* Output */}
         {generatedSchema && (
-          <div className="mt-2 p-4 bg-gray-100 dark:bg-gray-900 rounded text-sm font-mono overflow-x-auto text-black dark:text-white border border-gray-300 dark:border-gray-700">
-            <h3 className="mb-2 font-semibold">{t("generatedSchema")}:</h3>
+          <div className="group p-4 rounded text-sm font-mono overflow-x-auto border border-black/10 dark:border-white/10 bg-white dark:bg-[#060709] dark:hover:border-[#f5dc50]/40">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold">{t("generatedSchema")}:</h3>
+
+              <div
+                className="
+        opacity-0 translate-y-1 scale-95
+        group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+        transition-all duration-200 ease-out
+        pointer-events-none group-hover:pointer-events-auto
+      "
+              >
+                <BrandCopyButton
+                  id="schema"
+                  copiedButton={copiedButton}
+                  disabled={isAnyCopied && copiedButton !== "schema"}
+                  onClick={() => handleCopy(generatedSchema, "schema")}
+                />
+              </div>
+            </div>
+
             <pre>{JSON.stringify(generatedSchema, null, 2)}</pre>
           </div>
         )}
 
         {sampleData && (
-          <div className="mt-2 p-4 bg-gray-50 dark:bg-gray-900 rounded text-sm font-mono overflow-x-auto text-black dark:text-white border border-gray-300 dark:border-gray-700">
-            <h3 className="mb-2 font-semibold">{t("sampleData")}:</h3>
+          <div className="group p-4 rounded text-sm font-mono overflow-x-auto border border-black/10 dark:border-white/10 bg-white dark:bg-[#060709] dark:hover:border-[#f5dc50]/40">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold">{t("sampleData")}:</h3>
+
+              <div
+                className="
+        opacity-0 translate-y-1 scale-95
+        group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100
+        transition-all duration-200 ease-out
+        pointer-events-none group-hover:pointer-events-auto
+      "
+              >
+                <BrandCopyButton
+                  id="sample"
+                  copiedButton={copiedButton}
+                  disabled={isAnyCopied && copiedButton !== "sample"}
+                  onClick={() => handleCopy(sampleData, "sample")}
+                />
+              </div>
+            </div>
+
             <pre>{JSON.stringify(sampleData, null, 2)}</pre>
           </div>
         )}
@@ -391,3 +405,37 @@ export const DynamicForm = () => {
     </div>
   );
 };
+
+const btnBase = `
+  p-2 rounded-md
+  transition-all duration-150 ease-out
+  enabled:hover:brightness-90
+  enabled:active:scale-95
+  focus:outline-none focus:ring-1
+  disabled:opacity-50 disabled:cursor-not-allowed
+  flex items-center justify-center
+`;
+
+const btnBrand = `
+  ${btnBase}
+  bg-[#f5dc50] text-black
+  focus:ring-[#f5dc50]
+`;
+
+const btnSecondary = `
+  ${btnBase}
+  bg-indigo-600 text-white
+  focus:ring-indigo-600
+`;
+
+const btnSuccess = `
+  ${btnBase}
+  bg-green-600 text-white
+  focus:ring-green-600
+`;
+
+const btnDanger = `
+  ${btnBase}
+  bg-red-600 text-white
+  focus:ring-red-600
+`;

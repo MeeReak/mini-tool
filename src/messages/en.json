@@ -72,7 +72,7 @@
     "pdfFIleLimit": "You can only upload 5 pdf files!"
   },
   "FakeFilter": {
-    "title": "Fake Filter",
+    "title": "Fake Json",
     "description": "Generate a custom JSON schema and data based on user input.",
     "inputLabel": "Describe the data fields or structure you'd like to generate",
     "recipientTitle": "Recipient",
